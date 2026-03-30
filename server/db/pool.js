@@ -1,5 +1,5 @@
-const {Pool} = require('pg');
-const dotenv = require('dotenv');
+import pg from 'pg';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -20,4 +20,4 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
-module.exports = pool;
+export default pool;
