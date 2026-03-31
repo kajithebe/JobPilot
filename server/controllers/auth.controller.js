@@ -12,10 +12,19 @@ const signToken = (id) => {
 export const register = async (req, res) => {
   const {name, email, password} = req.body;
 
+  // Validate required fields
+  if (!name || !email || !password) {
+    return res
+      .status(400)
+      .json({error: 'Name, email and password are required'});
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
   try {
     // Check duplicate email
     const existing = await pool.query('SELECT id FROM users WHERE email = $1', [
-      email,
+      normalizedEmail,
     ]);
     if (existing.rows.length > 0) {
       return res.status(409).json({error: 'Email already in use'});
@@ -26,7 +35,7 @@ export const register = async (req, res) => {
       `INSERT INTO users (name, email, password)
        VALUES ($1, $2, $3)
        RETURNING id, name, email, created_at`,
-      [name, email, hashed]
+      [name.trim(), normalizedEmail, hashed]
     );
 
     const user = result.rows[0];
@@ -34,6 +43,10 @@ export const register = async (req, res) => {
 
     res.status(201).json({token, user});
   } catch (err) {
+    // Handle race condition on unique constraint
+    if (err.code === '23505') {
+      return res.status(409).json({error: 'Email already in use'});
+    }
     console.error('Register error:', err);
     res.status(500).json({error: 'Internal server error'});
   }
@@ -43,9 +56,16 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const {email, password} = req.body;
 
+  // Validate required fields
+  if (!email || !password) {
+    return res.status(400).json({error: 'Email and password are required'});
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+
   try {
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [
-      email,
+      normalizedEmail,
     ]);
 
     const user = result.rows[0];
@@ -76,5 +96,7 @@ export const login = async (req, res) => {
 
 // POST /api/auth/logout
 export const logout = (req, res) => {
-  res.json({message: 'Logged out successfully'});
+  res.json({
+    message: 'Logged out successfully. Please delete the token on the client.',
+  });
 };

@@ -2,6 +2,11 @@ import jwt from 'jsonwebtoken';
 import pool from '../db/pool.js';
 
 const verifyToken = async (req, res, next) => {
+  if (!process.env.JWT_SECRET) {
+    console.error('JWT_SECRET is not configured');
+    return res.status(500).json({error: 'Server configuration error'});
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
