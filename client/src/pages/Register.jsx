@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerUser } from '../services/authService';
 import { useAuth } from '../store/authContext';
+import Toast from '../components/ui/Toast';
 
 export default function Register() {
   const [firstName, setFirstName] = useState('');
@@ -261,6 +262,7 @@ export default function Register() {
 
         <footer style={styles.footer}>© 2025 JobPilot — College Project</footer>
       </div>
+      <Toast message={error} />
     </div>
   );
 }
