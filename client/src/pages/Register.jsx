@@ -1,3 +1,38 @@
+/**
+ * REGISTER PAGE
+ * ─────────────────────────────────────────────────────────────
+ * BACKEND: POST /api/auth/register
+ *
+ * Expected request body:
+ * {
+ *   name: string,    ← first + last name joined: "Alex Johnson"
+ *   email: string,
+ *   password: string ← plain text, BACKEND must hash with bcrypt
+ * }
+ *
+ * Expected success response (201):
+ * {
+ *   success: true,
+ *   data: {
+ *     token: string  ← JWT token, stored in localStorage as 'token'
+ *   }
+ * }
+ *
+ * Expected error response (400 or 409):
+ * {
+ *   success: false,
+ *   error: string    ← shown to user in the red error box
+ * }
+ *
+ * Common error cases to handle on backend:
+ *   409 → email already registered (duplicate)
+ *   400 → missing or invalid fields
+ *
+ * On success → user is redirected to /dashboard (auto logged in)
+ * On failure → error message is displayed in the red box and as a toast
+ * ─────────────────────────────────────────────────────────────
+ */
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/authService';
@@ -16,7 +51,7 @@ export default function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Password strength
+  // Password strength checker — frontend only, not sent to backend
   const getStrength = (val) => {
     let score = 0;
     if (val.length >= 8) score++;
@@ -41,6 +76,7 @@ export default function Register() {
     e.preventDefault();
     setError('');
 
+    // Frontend validation — runs before any API call
     if (!firstName || !lastName || !email || !password) {
       setError('Please fill in all fields.');
       return;
@@ -52,10 +88,24 @@ export default function Register() {
 
     try {
       setLoading(true);
-      const data = await registerUser(`${firstName} ${lastName}`, email, password);
+
+      // First + last name are joined into a single 'name' field before sending
+      // BACKEND: store this in users.name column (see schema.md)
+      const fullName = `${firstName} ${lastName}`;
+
+      // Calls POST /api/auth/register — see src/services/authService.js
+      const data = await registerUser(fullName, email, password);
+
+      // Saves JWT token to localStorage and updates global auth state
+      // BACKEND: return token immediately after register (auto login)
       login(data.token);
+
+      // Redirect to dashboard after successful registration
       navigate('/dashboard');
     } catch (err) {
+      // BACKEND: return { success: false, error: "message" } for all failures
+      // 409 → "Email already in use" or similar
+      // 400 → validation error
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
@@ -64,7 +114,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-[#080d1a] relative overflow-hidden">
-      {/* Background glows — radial-gradient not expressible in Tailwind */}
+      {/* Background glows — radial-gradient not expressible in Tailwind v3 */}
       <div
         className="fixed w-[700px] h-[700px] rounded-full pointer-events-none z-0 -top-52 -left-36"
         style={{ background: 'radial-gradient(circle, rgba(56,130,246,0.11) 0%, transparent 70%)' }}
@@ -110,7 +160,7 @@ export default function Register() {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* First + Last name row */}
+              {/* First + last name — joined as 'name' before sending to API */}
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
                   <label
@@ -148,7 +198,7 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Email field */}
+              {/* Email — must be unique in DB, BACKEND returns 409 if duplicate */}
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -167,7 +217,7 @@ export default function Register() {
                 />
               </div>
 
-              {/* Password field */}
+              {/* Password — sent as plain text, BACKEND must hash with bcrypt before storing */}
               <div className="mb-5">
                 <label
                   htmlFor="password"
@@ -206,7 +256,7 @@ export default function Register() {
                   </button>
                 </div>
 
-                {/* Password strength bars */}
+                {/* Strength bars — visual only, no effect on what gets sent to API */}
                 {password && (
                   <div className="mt-2">
                     <div className="flex gap-1 mb-1">
@@ -224,14 +274,13 @@ export default function Register() {
                 )}
               </div>
 
-              {/* Error message */}
+              {/* Error box — displays error string from API response */}
               {error && (
                 <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-3.5 py-2.5 text-sm mb-4">
                   {error}
                 </div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -266,6 +315,7 @@ export default function Register() {
         </footer>
       </div>
 
+      {/* Toast — appears bottom-right on failed auth */}
       <Toast message={error} />
     </div>
   );

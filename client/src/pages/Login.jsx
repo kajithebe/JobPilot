@@ -1,3 +1,33 @@
+/**
+ * LOGIN PAGE
+ * ─────────────────────────────────────────────────────────────
+ * BACKEND: POST /api/auth/login
+ *
+ * Expected request body:
+ * {
+ *   email: string,
+ *   password: string
+ * }
+ *
+ * Expected success response (200):
+ * {
+ *   success: true,
+ *   data: {
+ *     token: string   ← JWT token, stored in localStorage as 'token'
+ *   }
+ * }
+ *
+ * Expected error response (401 or 400):
+ * {
+ *   success: false,
+ *   error: string    ← shown to user in the red error box
+ * }
+ *
+ * On success → user is redirected to /dashboard
+ * On failure → error message is displayed in the red box and as a toast
+ * ─────────────────────────────────────────────────────────────
+ */
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService';
@@ -18,6 +48,7 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
+    // Frontend validation — runs before any API call
     if (!email || !password) {
       setError('Please fill in all fields.');
       return;
@@ -25,10 +56,19 @@ export default function Login() {
 
     try {
       setLoading(true);
+
+      // Calls POST /api/auth/login — see src/services/authService.js
       const data = await loginUser(email, password);
+
+      // Saves JWT token to localStorage and updates global auth state
+      // BACKEND: token must be a signed JWT string
       login(data.token);
+
+      // Redirect to dashboard on successful login
       navigate('/dashboard');
     } catch (err) {
+      // BACKEND: return { success: false, error: "message" } for all failures
+      // Common cases: wrong password (401), user not found (401), missing fields (400)
       setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
@@ -37,7 +77,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-[#080d1a] relative overflow-hidden">
-      {/* Background glows — radial-gradient not expressible in Tailwind */}
+      {/* Background glows — radial-gradient not expressible in Tailwind v3 */}
       <div
         className="fixed w-[700px] h-[700px] rounded-full pointer-events-none z-0 -top-52 -left-36"
         style={{ background: 'radial-gradient(circle, rgba(56,130,246,0.11) 0%, transparent 70%)' }}
@@ -76,7 +116,7 @@ export default function Login() {
             <p className="text-sm text-white/50 mb-8">Sign in to your JobPilot cockpit</p>
 
             <form onSubmit={handleSubmit}>
-              {/* Email field */}
+              {/* Email — sent as-is to the API, no transformation */}
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -95,7 +135,7 @@ export default function Login() {
                 />
               </div>
 
-              {/* Password field */}
+              {/* Password — sent as plain text, BACKEND must hash with bcrypt */}
               <div className="mb-2">
                 <label
                   htmlFor="password"
@@ -135,21 +175,19 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Forgot password */}
               <div className="text-right mb-5">
                 <a href="#" className="text-xs text-[#3882f6] no-underline hover:underline">
                   Forgot password?
                 </a>
               </div>
 
-              {/* Error message */}
+              {/* Error box — displays error string from API response */}
               {error && (
                 <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-3.5 py-2.5 text-sm mb-4">
                   {error}
                 </div>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -176,6 +214,7 @@ export default function Login() {
         </footer>
       </div>
 
+      {/* Toast — appears bottom-right on failed auth */}
       <Toast message={error} />
     </div>
   );
