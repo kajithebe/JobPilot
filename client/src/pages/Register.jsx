@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/authService';
 import { useAuth } from '../store/authContext';
 import Toast from '../components/ui/Toast';
@@ -16,7 +16,7 @@ export default function Register() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Password strength checker
+  // Password strength
   const getStrength = (val) => {
     let score = 0;
     if (val.length >= 8) score++;
@@ -28,7 +28,14 @@ export default function Register() {
 
   const strengthScore = getStrength(password);
   const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
-  const strengthColors = ['', '#ef4444', '#f59e0b', '#f59e0b', '#10b981'];
+  const strengthTextColors = [
+    '',
+    'text-red-400',
+    'text-yellow-400',
+    'text-yellow-400',
+    'text-emerald-400',
+  ];
+  const strengthBarColors = ['', 'bg-red-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-emerald-400'];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,8 +52,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      const fullName = `${firstName} ${lastName}`;
-      const data = await registerUser(fullName, email, password);
+      const data = await registerUser(`${firstName} ${lastName}`, email, password);
       login(data.token);
       navigate('/dashboard');
     } catch (err) {
@@ -57,74 +63,60 @@ export default function Register() {
   };
 
   return (
-    <div style={styles.root}>
-      {/* Background glows */}
-      <div style={styles.glow1} />
-      <div style={styles.glow2} />
+    <div className="min-h-screen bg-[#080d1a] relative overflow-hidden">
+      {/* Background glows — radial-gradient not expressible in Tailwind */}
+      <div
+        className="fixed w-[700px] h-[700px] rounded-full pointer-events-none z-0 -top-52 -left-36"
+        style={{ background: 'radial-gradient(circle, rgba(56,130,246,0.11) 0%, transparent 70%)' }}
+      />
+      <div
+        className="fixed w-[500px] h-[500px] rounded-full pointer-events-none z-0 -bottom-24 -right-24"
+        style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.09) 0%, transparent 70%)' }}
+      />
 
-      <div style={styles.page}>
+      <div className="relative z-10 min-h-screen flex flex-col">
         {/* Nav */}
-        <nav style={styles.nav}>
-          <Link to="/" style={styles.logo}>
-            <div style={styles.logoIcon}>
-              <svg viewBox="0 0 24 24" width="17" height="17" style={{ fill: 'white' }}>
+        <nav className="flex items-center justify-between px-12 py-6">
+          <Link to="/" className="flex items-center gap-2 no-underline">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-[#3882f6] to-[#8b5cf6]">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="white">
                 <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6l-8-4z" />
               </svg>
             </div>
-            <span style={styles.logoText}>JobPilot</span>
+            <span className="text-lg font-bold text-white tracking-tight">JobPilot</span>
           </Link>
-          <div style={styles.navRight}>
-            Already have an account?{' '}
-            <Link to="/login" style={styles.navLink}>
+          <div className="flex items-center gap-1 text-sm text-white/50">
+            Already have an account?
+            <Link
+              to="/login"
+              className="text-[#3882f6] font-medium ml-1 no-underline hover:underline"
+            >
               Log in
             </Link>
           </div>
         </nav>
 
         {/* Main */}
-        <main style={styles.main}>
-          <div style={styles.card}>
-            <div style={styles.cardTitle}>Start your journey</div>
-            <div style={styles.cardSub}>
-              Create your account <span style={styles.freeBadge}>Free forever</span>
+        <main className="flex-1 flex items-center justify-center px-6 pb-12">
+          <div className="w-full max-w-[440px] bg-[#0f1729] border border-white/[0.08] rounded-2xl p-10 shadow-2xl">
+            <h1 className="text-2xl font-bold text-white tracking-tight mb-1">
+              Start your journey
+            </h1>
+            <div className="flex items-center gap-2 mb-8">
+              <p className="text-sm text-white/50">Create your account</p>
+              <span className="text-xs font-semibold text-emerald-400 bg-emerald-400/10 border border-emerald-400/30 rounded-full px-2.5 py-0.5">
+                Free forever
+              </span>
             </div>
 
-            {/* Google button */}
-            <button style={styles.btnGoogle} type="button">
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Sign up with Google
-            </button>
-
-            {/* Divider */}
-            <div style={styles.divider}>
-              <div style={styles.dividerLine} />
-              <span style={styles.dividerText}>or create with email</span>
-              <div style={styles.dividerLine} />
-            </div>
-
-            {/* Form */}
             <form onSubmit={handleSubmit}>
               {/* First + Last name row */}
-              <div style={styles.nameRow}>
-                <div style={styles.field}>
-                  <label style={styles.label} htmlFor="firstName">
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                  >
                     First name
                   </label>
                   <input
@@ -133,12 +125,15 @@ export default function Register() {
                     placeholder="Alex"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    style={styles.input}
                     autoComplete="given-name"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
                   />
                 </div>
-                <div style={styles.field}>
-                  <label style={styles.label} htmlFor="lastName">
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                  >
                     Last name
                   </label>
                   <input
@@ -147,15 +142,18 @@ export default function Register() {
                     placeholder="Johnson"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    style={styles.input}
                     autoComplete="family-name"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
                   />
                 </div>
               </div>
 
-              {/* Email */}
-              <div style={styles.field}>
-                <label style={styles.label} htmlFor="email">
+              {/* Email field */}
+              <div className="mb-4">
+                <label
+                  htmlFor="email"
+                  className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                >
                   Email address
                 </label>
                 <input
@@ -164,30 +162,33 @@ export default function Register() {
                   placeholder="you@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={styles.input}
                   autoComplete="email"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
                 />
               </div>
 
-              {/* Password */}
-              <div style={styles.field}>
-                <label style={styles.label} htmlFor="password">
+              {/* Password field */}
+              <div className="mb-5">
+                <label
+                  htmlFor="password"
+                  className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                >
                   Password
                 </label>
-                <div style={{ position: 'relative' }}>
+                <div className="relative">
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={{ ...styles.input, paddingRight: '44px' }}
                     autoComplete="new-password"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={styles.pwToggle}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-white/25 hover:text-white/50 transition-colors bg-transparent border-none cursor-pointer"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -207,276 +208,65 @@ export default function Register() {
 
                 {/* Password strength bars */}
                 {password && (
-                  <div style={{ marginTop: '8px' }}>
-                    <div style={{ display: 'flex', gap: '4px', marginBottom: '4px' }}>
+                  <div className="mt-2">
+                    <div className="flex gap-1 mb-1">
                       {[1, 2, 3, 4].map((i) => (
                         <div
                           key={i}
-                          style={{
-                            flex: 1,
-                            height: '3px',
-                            borderRadius: '2px',
-                            background:
-                              i <= strengthScore
-                                ? strengthColors[strengthScore]
-                                : 'rgba(255,255,255,0.07)',
-                            transition: 'background 0.3s',
-                          }}
+                          className={`flex-1 h-0.5 rounded-full transition-colors ${i <= strengthScore ? strengthBarColors[strengthScore] : 'bg-white/[0.07]'}`}
                         />
                       ))}
                     </div>
-                    <div style={{ fontSize: '11px', color: strengthColors[strengthScore] }}>
+                    <span className={`text-[11px] ${strengthTextColors[strengthScore]}`}>
                       {strengthLabels[strengthScore]}
-                    </div>
+                    </span>
                   </div>
                 )}
               </div>
 
               {/* Error message */}
-              {error && <div style={styles.errorMsg}>{error}</div>}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-3.5 py-2.5 text-sm mb-4">
+                  {error}
+                </div>
+              )}
 
-              <button type="submit" disabled={loading} style={styles.btnSubmit}>
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-br from-[#3882f6] to-[#6366f1] text-white font-semibold py-3.5 rounded-xl text-sm shadow-[0_4px_20px_rgba(56,130,246,0.3)] hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer border-none"
+              >
                 {loading ? 'Creating account...' : 'Create my JobPilot account →'}
               </button>
             </form>
 
-            <div style={styles.terms}>
+            <p className="text-xs text-white/25 text-center mt-4 leading-relaxed">
               By signing up, you agree to our{' '}
-              <a href="#" style={styles.navLink}>
+              <a href="#" className="text-[#3882f6]/80 no-underline hover:underline">
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="#" style={styles.navLink}>
+              <a href="#" className="text-[#3882f6]/80 no-underline hover:underline">
                 Privacy Policy
               </a>
-            </div>
+            </p>
 
-            <div style={styles.cardFooter}>
+            <p className="text-center mt-5 text-sm text-white/50">
               Already have an account?{' '}
-              <Link to="/login" style={styles.navLink}>
+              <Link to="/login" className="text-[#3882f6] font-medium no-underline hover:underline">
                 Sign in
               </Link>
-            </div>
+            </p>
           </div>
         </main>
 
-        <footer style={styles.footer}>© 2025 JobPilot — College Project</footer>
+        <footer className="text-center pb-6 text-xs text-white/25">
+          © 2025 JobPilot — College Project
+        </footer>
       </div>
+
       <Toast message={error} />
     </div>
   );
 }
-
-const styles = {
-  root: {
-    fontFamily: "'Inter', sans-serif",
-    background: '#080d1a',
-    minHeight: '100vh',
-    position: 'relative',
-  },
-  glow1: {
-    position: 'fixed',
-    width: '700px',
-    height: '700px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(56,130,246,0.11) 0%, transparent 70%)',
-    top: '-200px',
-    left: '-150px',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-  glow2: {
-    position: 'fixed',
-    width: '500px',
-    height: '500px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(139,92,246,0.09) 0%, transparent 70%)',
-    bottom: '-100px',
-    right: '-100px',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-  page: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    zIndex: 1,
-  },
-  nav: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '22px 48px',
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    textDecoration: 'none',
-  },
-  logoIcon: {
-    width: '32px',
-    height: '32px',
-    background: 'linear-gradient(135deg, #3882f6, #8b5cf6)',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    fontSize: '18px',
-    fontWeight: 700,
-    color: '#fff',
-    letterSpacing: '-0.3px',
-  },
-  navRight: {
-    fontSize: '14px',
-    color: 'rgba(255,255,255,0.5)',
-    display: 'flex',
-    gap: '5px',
-    alignItems: 'center',
-  },
-  navLink: { color: '#3882f6', textDecoration: 'none', fontWeight: 500 },
-  main: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '24px 24px 48px',
-  },
-  card: {
-    background: '#0f1729',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '20px',
-    padding: '40px',
-    width: '100%',
-    maxWidth: '440px',
-    boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
-  },
-  cardTitle: {
-    fontSize: '24px',
-    fontWeight: 700,
-    color: '#fff',
-    letterSpacing: '-0.5px',
-    marginBottom: '4px',
-  },
-  cardSub: {
-    fontSize: '14px',
-    color: 'rgba(255,255,255,0.5)',
-    marginBottom: '26px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-  },
-  freeBadge: {
-    background: 'rgba(16,185,129,0.15)',
-    border: '1px solid rgba(16,185,129,0.3)',
-    color: '#34d399',
-    fontSize: '11px',
-    fontWeight: 600,
-    borderRadius: '99px',
-    padding: '2px 10px',
-  },
-  btnGoogle: {
-    width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '10px',
-    padding: '11px 16px',
-    color: 'rgba(255,255,255,0.75)',
-    fontSize: '14px',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 500,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '10px',
-    marginBottom: '22px',
-  },
-  divider: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginBottom: '22px',
-  },
-  dividerLine: { flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' },
-  dividerText: { fontSize: '12px', color: 'rgba(255,255,255,0.25)' },
-  nameRow: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' },
-  field: { marginBottom: '16px' },
-  label: {
-    display: 'block',
-    fontSize: '12px',
-    fontWeight: 500,
-    color: 'rgba(255,255,255,0.5)',
-    marginBottom: '6px',
-    letterSpacing: '0.3px',
-  },
-  input: {
-    width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.08)',
-    borderRadius: '10px',
-    padding: '12px 14px',
-    fontSize: '14px',
-    fontFamily: "'Inter', sans-serif",
-    color: '#fff',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  pwToggle: {
-    position: 'absolute',
-    right: '13px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '4px',
-    color: 'rgba(255,255,255,0.25)',
-  },
-  errorMsg: {
-    background: 'rgba(239,68,68,0.1)',
-    border: '1px solid rgba(239,68,68,0.3)',
-    color: '#f87171',
-    borderRadius: '8px',
-    padding: '10px 14px',
-    fontSize: '13px',
-    marginBottom: '12px',
-  },
-  btnSubmit: {
-    width: '100%',
-    background: 'linear-gradient(135deg, #3882f6, #6366f1)',
-    border: 'none',
-    borderRadius: '10px',
-    padding: '13px',
-    color: '#fff',
-    fontSize: '15px',
-    fontFamily: "'Inter', sans-serif",
-    fontWeight: 600,
-    cursor: 'pointer',
-    marginTop: '8px',
-    letterSpacing: '0.1px',
-    boxShadow: '0 4px 20px rgba(56,130,246,0.3)',
-  },
-  terms: {
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.25)',
-    textAlign: 'center',
-    marginTop: '16px',
-    lineHeight: 1.6,
-  },
-  cardFooter: {
-    textAlign: 'center',
-    marginTop: '20px',
-    fontSize: '13px',
-    color: 'rgba(255,255,255,0.5)',
-  },
-  footer: {
-    textAlign: 'center',
-    padding: '0 48px 24px',
-    fontSize: '12px',
-    color: 'rgba(255,255,255,0.25)',
-  },
-};
