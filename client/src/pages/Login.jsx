@@ -2,77 +2,47 @@
  * LOGIN PAGE
  * ─────────────────────────────────────────────────────────────
  * BACKEND: POST /api/auth/login
+ * Request:  { email, password }
+ * Response: { success: true, data: { token, user: { id, name, email } } }
  *
- * Expected request body:
- * {
- *   email: string,
- *   password: string
- * }
- *
- * Expected success response (200):
- * {
- *   success: true,
- *   data: {
- *     token: string   ← JWT token, stored in localStorage as 'token'
- *   }
- * }
- *
- * Expected error response (401 or 400):
- * {
- *   success: false,
- *   error: string    ← shown to user in the red error box
- * }
- *
- * On success → user is redirected to /dashboard
- * On failure → error message is displayed in the red box and as a toast
+ * Errors shown via react-hot-toast (handled in useAuth hook)
  * ─────────────────────────────────────────────────────────────
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { loginUser } from '../services/authService';
-import { useAuth } from '../store/authContext';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.js';
 import Toast from '../components/ui/Toast';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { login, loading } = useAuth();
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Enter a valid email';
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6)
+      newErrors.password = 'Password must be at least 6 characters';
+    return newErrors;
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    // Frontend validation — runs before any API call
-    if (!email || !password) {
-      setError('Please fill in all fields.');
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
-
-    try {
-      setLoading(true);
-
-      // Calls POST /api/auth/login — see src/services/authService.js
-      const data = await loginUser(email, password);
-
-      // Saves JWT token to localStorage and updates global auth state
-      // BACKEND: token must be a signed JWT string
-      login(data.token);
-
-      // Redirect to dashboard on successful login
-      navigate('/dashboard');
-    } catch (err) {
-      // BACKEND: return { success: false, error: "message" } for all failures
-      // Common cases: wrong password (401), user not found (401), missing fields (400)
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    await login(formData.email, formData.password);
   };
 
   return (
@@ -116,7 +86,7 @@ export default function Login() {
             <p className="text-sm text-white/50 mb-8">Sign in to your JobPilot cockpit</p>
 
             <form onSubmit={handleSubmit}>
-              {/* Email — sent as-is to the API, no transformation */}
+              {/* Email */}
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -127,15 +97,18 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="you@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   autoComplete="email"
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
+                  className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none transition-colors
+                    ${errors.email ? 'border-red-400 focus:border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
                 />
+                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
               </div>
 
-              {/* Password — sent as plain text, BACKEND must hash with bcrypt */}
+              {/* Password */}
               <div className="mb-2">
                 <label
                   htmlFor="password"
@@ -147,11 +120,13 @@ export default function Login() {
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
                     placeholder="Your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     autoComplete="current-password"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
+                    className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none transition-colors
+                      ${errors.password ? 'border-red-400 focus:border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
                   />
                   <button
                     type="button"
@@ -173,6 +148,7 @@ export default function Login() {
                     </svg>
                   </button>
                 </div>
+                {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
               </div>
 
               <div className="text-right mb-5">
@@ -180,13 +156,6 @@ export default function Login() {
                   Forgot password?
                 </a>
               </div>
-
-              {/* Error box — displays error string from API response */}
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-3.5 py-2.5 text-sm mb-4">
-                  {error}
-                </div>
-              )}
 
               <button
                 type="submit"
@@ -213,9 +182,6 @@ export default function Login() {
           © 2025 JobPilot — College Project
         </footer>
       </div>
-
-      {/* Toast — appears bottom-right on failed auth */}
-      <Toast message={error} />
     </div>
   );
 }

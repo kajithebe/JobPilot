@@ -2,56 +2,29 @@
  * REGISTER PAGE
  * ─────────────────────────────────────────────────────────────
  * BACKEND: POST /api/auth/register
+ * Request:  { name, email, password }
+ * Response: { success: true, data: { token, user: { id, name, email } } }
  *
- * Expected request body:
- * {
- *   name: string,    ← first + last name joined: "Alex Johnson"
- *   email: string,
- *   password: string ← plain text, BACKEND must hash with bcrypt
- * }
- *
- * Expected success response (201):
- * {
- *   success: true,
- *   data: {
- *     token: string  ← JWT token, stored in localStorage as 'token'
- *   }
- * }
- *
- * Expected error response (400 or 409):
- * {
- *   success: false,
- *   error: string    ← shown to user in the red error box
- * }
- *
- * Common error cases to handle on backend:
- *   409 → email already registered (duplicate)
- *   400 → missing or invalid fields
- *
- * On success → user is redirected to /dashboard (auto logged in)
- * On failure → error message is displayed in the red box and as a toast
+ * Extra frontend validation: confirm password field (not sent to API)
+ * Errors shown via react-hot-toast (handled in useAuth hook)
  * ─────────────────────────────────────────────────────────────
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { registerUser } from '../services/authService';
-import { useAuth } from '../store/authContext';
-import Toast from '../components/ui/Toast';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.js';
 
 export default function Register() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { register, loading } = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  // Password strength checker — frontend only, not sent to backend
   const getStrength = (val) => {
     let score = 0;
     if (val.length >= 8) score++;
@@ -61,7 +34,7 @@ export default function Register() {
     return score;
   };
 
-  const strengthScore = getStrength(password);
+  const strengthScore = getStrength(formData.password);
   const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
   const strengthTextColors = [
     '',
@@ -72,44 +45,34 @@ export default function Register() {
   ];
   const strengthBarColors = ['', 'bg-red-400', 'bg-yellow-400', 'bg-yellow-400', 'bg-emerald-400'];
 
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Enter a valid email';
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6)
+      newErrors.password = 'Password must be at least 6 characters';
+    if (!formData.confirmPassword) newErrors.confirmPassword = 'Please confirm your password';
+    else if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = 'Passwords do not match';
+    return newErrors;
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: '' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    // Frontend validation — runs before any API call
-    if (!firstName || !lastName || !email || !password) {
-      setError('Please fill in all fields.');
+    const newErrors = validate();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // First + last name are joined into a single 'name' field before sending
-      // BACKEND: store this in users.name column (see schema.md)
-      const fullName = `${firstName} ${lastName}`;
-
-      // Calls POST /api/auth/register — see src/services/authService.js
-      const data = await registerUser(fullName, email, password);
-
-      // Saves JWT token to localStorage and updates global auth state
-      // BACKEND: return token immediately after register (auto login)
-      login(data.token);
-
-      // Redirect to dashboard after successful registration
-      navigate('/dashboard');
-    } catch (err) {
-      // BACKEND: return { success: false, error: "message" } for all failures
-      // 409 → "Email already in use" or similar
-      // 400 → validation error
-      setError(err.response?.data?.error || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    // confirmPassword is NOT sent to API — only name, email, password
+    await register(formData.name, formData.email, formData.password);
   };
 
   return (
@@ -160,45 +123,29 @@ export default function Register() {
             </div>
 
             <form onSubmit={handleSubmit}>
-              {/* First + last name — joined as 'name' before sending to API */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label
-                    htmlFor="firstName"
-                    className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
-                  >
-                    First name
-                  </label>
-                  <input
-                    id="firstName"
-                    type="text"
-                    placeholder="Alex"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    autoComplete="given-name"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="lastName"
-                    className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
-                  >
-                    Last name
-                  </label>
-                  <input
-                    id="lastName"
-                    type="text"
-                    placeholder="Johnson"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    autoComplete="family-name"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
-                  />
-                </div>
+              {/* Full name — sent as single 'name' field to API */}
+              <div className="mb-4">
+                <label
+                  htmlFor="name"
+                  className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                >
+                  Full name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Alex Johnson"
+                  value={formData.name}
+                  onChange={handleChange}
+                  autoComplete="name"
+                  className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none transition-colors
+                    ${errors.name ? 'border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
+                />
+                {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
               </div>
 
-              {/* Email — must be unique in DB, BACKEND returns 409 if duplicate */}
+              {/* Email — must be unique, BACKEND returns 409 if duplicate */}
               <div className="mb-4">
                 <label
                   htmlFor="email"
@@ -209,16 +156,19 @@ export default function Register() {
                 <input
                   id="email"
                   type="email"
+                  name="email"
                   placeholder="you@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   autoComplete="email"
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
+                  className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none transition-colors
+                    ${errors.email ? 'border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
                 />
+                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
               </div>
 
-              {/* Password — sent as plain text, BACKEND must hash with bcrypt before storing */}
-              <div className="mb-5">
+              {/* Password — plain text, BACKEND must hash with bcrypt */}
+              <div className="mb-4">
                 <label
                   htmlFor="password"
                   className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
@@ -229,11 +179,13 @@ export default function Register() {
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
+                    name="password"
                     placeholder="Create a strong password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={formData.password}
+                    onChange={handleChange}
                     autoComplete="new-password"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3.5 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06] transition-colors"
+                    className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 pr-11 text-sm text-white placeholder-white/25 outline-none transition-colors
+                      ${errors.password ? 'border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
                   />
                   <button
                     type="button"
@@ -255,9 +207,10 @@ export default function Register() {
                     </svg>
                   </button>
                 </div>
+                {errors.password && <p className="text-xs text-red-400 mt-1">{errors.password}</p>}
 
-                {/* Strength bars — visual only, no effect on what gets sent to API */}
-                {password && (
+                {/* Strength bars — frontend only, not sent to API */}
+                {formData.password && (
                   <div className="mt-2">
                     <div className="flex gap-1 mb-1">
                       {[1, 2, 3, 4].map((i) => (
@@ -274,12 +227,29 @@ export default function Register() {
                 )}
               </div>
 
-              {/* Error box — displays error string from API response */}
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-3.5 py-2.5 text-sm mb-4">
-                  {error}
-                </div>
-              )}
+              {/* Confirm password — frontend only, NOT sent to API */}
+              <div className="mb-5">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-xs font-medium text-white/50 mb-1.5 tracking-wide"
+                >
+                  Confirm password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  className={`w-full bg-white/[0.04] border rounded-xl px-3.5 py-3 text-sm text-white placeholder-white/25 outline-none transition-colors
+                    ${errors.confirmPassword ? 'border-red-400' : 'border-white/[0.08] focus:border-[#3882f6] focus:bg-[#3882f6]/[0.06]'}`}
+                />
+                {errors.confirmPassword && (
+                  <p className="text-xs text-red-400 mt-1">{errors.confirmPassword}</p>
+                )}
+              </div>
 
               <button
                 type="submit"
@@ -289,17 +259,6 @@ export default function Register() {
                 {loading ? 'Creating account...' : 'Create my JobPilot account →'}
               </button>
             </form>
-
-            <p className="text-xs text-white/25 text-center mt-4 leading-relaxed">
-              By signing up, you agree to our{' '}
-              <a href="#" className="text-[#3882f6]/80 no-underline hover:underline">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-[#3882f6]/80 no-underline hover:underline">
-                Privacy Policy
-              </a>
-            </p>
 
             <p className="text-center mt-5 text-sm text-white/50">
               Already have an account?{' '}
@@ -314,9 +273,6 @@ export default function Register() {
           © 2025 JobPilot — College Project
         </footer>
       </div>
-
-      {/* Toast — appears bottom-right on failed auth */}
-      <Toast message={error} />
     </div>
   );
 }
