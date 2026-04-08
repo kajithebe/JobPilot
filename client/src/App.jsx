@@ -1,14 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-// import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
-// import Login from './pages/Login.jsx';
-// import Register from './pages/Register.jsx';
+import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // Placeholder — will be replaced in later sprints
 const Dashboard = () => (
-  <div className="p-8 text-gray-700">Dashboard — coming soon</div>
+  <div className="p-8 text-white bg-[#080d1a] min-h-screen">Dashboard — coming soon!</div>
 );
 
 const App = () => {
@@ -18,18 +18,18 @@ const App = () => {
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<Landing />} />
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Protected routes */}
-        {/* <Route
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
-        /> */}
+        />
 
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />
