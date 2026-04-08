@@ -1,15 +1,3 @@
-/**
- * API BASE INSTANCE
- * ─────────────────────────────────────────────────────────────
- * BACKEND: Base URL points to http://localhost:5000/api in development.
- * Set VITE_API_URL in .env for production.
- *
- * This instance automatically:
- *   - Attaches JWT token to every request as Authorization: Bearer <token>
- *   - Handles 401 globally — clears token and redirects to /login
- * ─────────────────────────────────────────────────────────────
- */
-
 import axios from 'axios';
 
 const api = axios.create({

@@ -1,14 +1,3 @@
-/**
- * LOGIN PAGE
- * ─────────────────────────────────────────────────────────────
- * BACKEND: POST /api/auth/login
- * Request:  { email, password }
- * Response: { success: true, data: { token, user: { id, name, email } } }
- *
- * Errors shown via react-hot-toast (handled in useAuth hook)
- * ─────────────────────────────────────────────────────────────
- */
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';

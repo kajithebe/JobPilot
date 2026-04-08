@@ -1,15 +1,3 @@
-/**
- * REGISTER PAGE
- * ─────────────────────────────────────────────────────────────
- * BACKEND: POST /api/auth/register
- * Request:  { name, email, password }
- * Response: { success: true, data: { token, user: { id, name, email } } }
- *
- * Extra frontend validation: confirm password field (not sent to API)
- * Errors shown via react-hot-toast (handled in useAuth hook)
- * ─────────────────────────────────────────────────────────────
- */
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.js';

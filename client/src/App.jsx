@@ -4,15 +4,17 @@
  * BACKEND: No API calls here.
  * <Toaster /> handles all toast notifications globally.
  *
- * Public routes:  /, /login, /register
+ * Public routes:  /login, /register
  * Protected routes: /dashboard (requires token in localStorage)
+ *
+ * NOTE: Landing page (/) is handled by Sani — not included here yet.
+ * Will be added once Sani's Landing page PR is merged into dev.
  * ─────────────────────────────────────────────────────────────
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
-import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 
@@ -28,7 +30,6 @@ const App = () => {
       <Toaster position="top-right" />
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -42,8 +43,11 @@ const App = () => {
           }
         />
 
+        {/* Default — redirect to /login until Landing page is added by Sani */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

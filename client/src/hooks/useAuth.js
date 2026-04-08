@@ -1,20 +1,3 @@
-/**
- * useAuth HOOK
- * ─────────────────────────────────────────────────────────────
- * Handles login, register and logout logic.
- * Uses react-hot-toast for success/error notifications.
- *
- * BACKEND: Expects both token AND user object in response data:
- * {
- *   success: true,
- *   data: {
- *     token: string,
- *     user: { id, name, email }
- *   }
- * }
- * ─────────────────────────────────────────────────────────────
- */
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser, loginUser, logoutUser } from '../services/auth.service.js';
