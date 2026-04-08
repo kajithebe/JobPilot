@@ -3,23 +3,25 @@ import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import Landing from './pages/Landing.jsx';
+import NotFound from './pages/NotFound.jsx';
 
-// Placeholder — will be replaced in Task 10
+// Placeholder — will be replaced in later sprints
 const Dashboard = () => (
-  <div className="p-8 text-white bg-[#080d1a] min-h-screen">Dashboard — coming in Task 10!</div>
+  <div className="p-8 text-white bg-[#080d1a] min-h-screen">Dashboard — coming soon!</div>
 );
 
 const App = () => {
   return (
     <BrowserRouter>
-      {/* Global toast notifications — position top-right */}
       <Toaster position="top-right" />
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected routes — redirect to /login if no token */}
+        {/* Protected routes */}
         <Route
           path="/dashboard"
           element={
@@ -29,11 +31,8 @@ const App = () => {
           }
         />
 
-        {/* Default — redirect to /login until Landing page is added by Sani */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* 404 fallback */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
