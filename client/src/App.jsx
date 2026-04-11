@@ -1,15 +1,16 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
+import DashboardLayout from './components/layout/DashboardLayout.jsx';
+import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
-import Landing from './pages/Landing.jsx';
-import NotFound from './pages/NotFound.jsx';
-
-// Placeholder — will be replaced in later sprints
-const Dashboard = () => (
-  <div className="p-8 text-white bg-[#080d1a] min-h-screen">Dashboard — coming soon!</div>
-);
+import Dashboard from './pages/Dashboard.jsx';
+import ResumeBuilder from './pages/ResumeBuilder.jsx';
+import JobTracker from './pages/JobTracker.jsx';
+import Interviews from './pages/Interviews.jsx';
+import ATSChecker from './pages/ATSChecker.jsx';
+import Settings from './pages/Settings.jsx';
 
 const App = () => {
   return (
@@ -21,18 +22,70 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected routes */}
+        {/* Protected routes — all wrapped in DashboardLayout */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <DashboardLayout>
+                <Dashboard />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/resume-builder"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ResumeBuilder />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/job-tracker"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <JobTracker />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/interviews"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Interviews />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ats-checker"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <ATSChecker />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <Settings />
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* 404 fallback */}
-        <Route path="*" element={<NotFound />} />
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
