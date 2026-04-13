@@ -25,11 +25,11 @@ const FONTS = [
 
 const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
   return (
-    <div className="bg-[#0f1629] border-b border-gray-800 px-6 py-4">
+    <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
       <div className="flex items-start justify-between gap-8">
         {/* Templates */}
         <div className="flex-1">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-2 font-medium">Template</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-2 font-medium">Template</p>
           <div className="flex gap-2 flex-wrap">
             {TEMPLATES.map((t) => (
               <button
@@ -38,7 +38,7 @@ const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
                 className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                   template === t.id
                     ? 'border-blue-500 bg-blue-600/20 text-blue-300'
-                    : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-300'
+                    : 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-700'
                 }`}
               >
                 {t.label}
@@ -49,7 +49,7 @@ const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
 
         {/* Colour themes */}
         <div className="flex-1">
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-2 font-medium">
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-2 font-medium">
             Colour Theme
           </p>
           <div className="flex gap-2 flex-wrap">
@@ -80,7 +80,7 @@ const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
 
         {/* Font */}
         <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide mb-2 font-medium">Font</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-2 font-medium">Font</p>
           <div className="flex gap-2">
             {FONTS.map((f) => (
               <button
@@ -89,7 +89,7 @@ const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
                 className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                   themeConfig?.font === f.id
                     ? 'border-blue-500 bg-blue-600/20 text-blue-300'
-                    : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-300'
+                    : 'border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-700'
                 }`}
                 style={{ fontFamily: f.id }}
               >

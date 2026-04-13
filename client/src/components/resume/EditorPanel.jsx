@@ -30,12 +30,9 @@ const EditorPanel = ({ content, sectionOrder, onChange }) => {
   };
 
   return (
-    <div className="w-1/2 overflow-y-auto bg-[#0f1629] border-r border-gray-800">
+    <div className="w-1/2 overflow-y-auto bg-gray-50 border-r border-gray-200">
       <div className="p-6 space-y-4">
-        {/* Personal Info — fixed, always on top */}
         <PersonalInfoForm data={content.personalInfo} onChange={handlePersonalInfoChange} />
-
-        {/* Reorderable sections */}
         {reorderableSections.map((sectionKey, index) => (
           <SectionBlock
             key={sectionKey}

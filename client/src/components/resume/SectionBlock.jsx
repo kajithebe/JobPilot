@@ -4,15 +4,15 @@ const SectionBlock = ({ sectionKey, label, data, onChange, onMoveUp, onMoveDown 
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className="bg-[#080d1a] border border-gray-800 rounded-xl overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
       {/* Section header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div
-          className="flex items-center gap-2 flex-1 cursor-pointer hover:opacity-80"
+          className="flex items-center gap-2 flex-1 cursor-pointer hover:opacity-70 transition"
           onClick={() => setExpanded(!expanded)}
         >
-          <h3 className="text-white text-sm font-medium">{label}</h3>
-          <span className="text-gray-600 text-xs">{expanded ? '▲' : '▼'}</span>
+          <h3 className="text-gray-900 text-sm font-medium">{label}</h3>
+          <span className="text-gray-400 text-xs">{expanded ? '▲' : '▼'}</span>
         </div>
 
         {/* Reorder arrows */}
@@ -20,7 +20,7 @@ const SectionBlock = ({ sectionKey, label, data, onChange, onMoveUp, onMoveDown 
           <button
             onClick={onMoveUp}
             disabled={!onMoveUp}
-            className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors rounded hover:bg-gray-800"
+            className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 disabled:cursor-not-allowed transition rounded hover:bg-gray-100"
             title="Move up"
           >
             ↑
@@ -28,7 +28,7 @@ const SectionBlock = ({ sectionKey, label, data, onChange, onMoveUp, onMoveDown 
           <button
             onClick={onMoveDown}
             disabled={!onMoveDown}
-            className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors rounded hover:bg-gray-800"
+            className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-gray-700 disabled:opacity-20 disabled:cursor-not-allowed transition rounded hover:bg-gray-100"
             title="Move down"
           >
             ↓
@@ -38,15 +38,17 @@ const SectionBlock = ({ sectionKey, label, data, onChange, onMoveUp, onMoveDown 
 
       {/* Section content */}
       {expanded && (
-        <div className="px-4 pb-4">
-          <SectionContent sectionKey={sectionKey} data={data} onChange={onChange} />
+        <div className="px-4 pb-4 border-t border-gray-100">
+          <div className="pt-3">
+            <SectionContent sectionKey={sectionKey} data={data} onChange={onChange} />
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-// ── Section content renderers ─────────────────────────────────────────
+// ── Section content router ────────────────────────────────────────────
 
 const SectionContent = ({ sectionKey, data, onChange }) => {
   switch (sectionKey) {
@@ -69,26 +71,26 @@ const SectionContent = ({ sectionKey, data, onChange }) => {
 
 const Field = ({ label, value, onChange, placeholder, type = 'text' }) => (
   <div>
-    <label className="block text-xs text-gray-500 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
     <input
       type={type}
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full bg-[#0f1629] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 placeholder-gray-600"
+      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
     />
   </div>
 );
 
 const TextArea = ({ label, value, onChange, placeholder, rows = 3 }) => (
   <div>
-    <label className="block text-xs text-gray-500 mb-1">{label}</label>
+    <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
     <textarea
       value={value || ''}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-[#0f1629] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 placeholder-gray-600 resize-none"
+      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300 resize-none"
     />
   </div>
 );
@@ -96,7 +98,7 @@ const TextArea = ({ label, value, onChange, placeholder, rows = 3 }) => (
 const AddButton = ({ label, onClick }) => (
   <button
     onClick={onClick}
-    className="w-full mt-3 py-2 border border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-gray-300 hover:border-gray-500 text-sm transition-colors"
+    className="w-full mt-3 py-2 border border-dashed border-gray-300 rounded-lg text-gray-400 hover:text-blue-600 hover:border-blue-400 text-sm transition"
   >
     + {label}
   </button>
@@ -104,10 +106,10 @@ const AddButton = ({ label, onClick }) => (
 
 const ItemHeader = ({ title, onRemove }) => (
   <div className="flex items-center justify-between mb-3">
-    <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">{title}</span>
+    <span className="text-xs text-gray-400 font-medium uppercase tracking-wide">{title}</span>
     <button
       onClick={onRemove}
-      className="text-gray-600 hover:text-red-400 transition-colors text-lg leading-none"
+      className="text-gray-300 hover:text-red-400 transition text-lg leading-none"
     >
       ×
     </button>
@@ -149,19 +151,15 @@ const emptyItem = (type) => {
 
 const ExperienceSection = ({ data, onChange }) => {
   const items = data || [];
-
-  const updateItem = (index, field, value) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
-    onChange(updated);
-  };
-
+  const updateItem = (index, field, value) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   const addItem = () => onChange([...items, emptyItem('experience')]);
   const removeItem = (index) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-4">
       {items.map((item, index) => (
-        <div key={index} className="border border-gray-800 rounded-lg p-3">
+        <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
           <ItemHeader title={`Experience ${index + 1}`} onRemove={() => removeItem(index)} />
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
@@ -216,19 +214,15 @@ const ExperienceSection = ({ data, onChange }) => {
 
 const EducationSection = ({ data, onChange }) => {
   const items = data || [];
-
-  const updateItem = (index, field, value) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
-    onChange(updated);
-  };
-
+  const updateItem = (index, field, value) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   const addItem = () => onChange([...items, emptyItem('education')]);
   const removeItem = (index) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-4">
       {items.map((item, index) => (
-        <div key={index} className="border border-gray-800 rounded-lg p-3">
+        <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
           <ItemHeader title={`Education ${index + 1}`} onRemove={() => removeItem(index)} />
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
@@ -302,12 +296,12 @@ const SkillsSection = ({ data, onChange }) => {
         {skills.map((skill, index) => (
           <span
             key={index}
-            className="flex items-center gap-1 bg-blue-900/30 border border-blue-800 text-blue-300 text-xs px-2 py-1 rounded-full"
+            className="flex items-center gap-1 bg-blue-50 border border-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full"
           >
             {skill}
             <button
               onClick={() => removeSkill(index)}
-              className="hover:text-red-400 transition-colors ml-1"
+              className="hover:text-red-400 transition ml-1"
             >
               ×
             </button>
@@ -321,11 +315,11 @@ const SkillsSection = ({ data, onChange }) => {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addSkill()}
           placeholder="Type a skill and press Enter"
-          className="flex-1 bg-[#0f1629] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 placeholder-gray-600"
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
         />
         <button
           onClick={addSkill}
-          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition"
         >
           Add
         </button>
@@ -338,19 +332,15 @@ const SkillsSection = ({ data, onChange }) => {
 
 const ProjectsSection = ({ data, onChange }) => {
   const items = data || [];
-
-  const updateItem = (index, field, value) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
-    onChange(updated);
-  };
-
+  const updateItem = (index, field, value) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   const addItem = () => onChange([...items, emptyItem('project')]);
   const removeItem = (index) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-4">
       {items.map((item, index) => (
-        <div key={index} className="border border-gray-800 rounded-lg p-3">
+        <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
           <ItemHeader title={`Project ${index + 1}`} onRemove={() => removeItem(index)} />
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
@@ -402,19 +392,15 @@ const ProjectsSection = ({ data, onChange }) => {
 
 const CertificationsSection = ({ data, onChange }) => {
   const items = data || [];
-
-  const updateItem = (index, field, value) => {
-    const updated = items.map((item, i) => (i === index ? { ...item, [field]: value } : item));
-    onChange(updated);
-  };
-
+  const updateItem = (index, field, value) =>
+    onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   const addItem = () => onChange([...items, emptyItem('certification')]);
   const removeItem = (index) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-4">
       {items.map((item, index) => (
-        <div key={index} className="border border-gray-800 rounded-lg p-3">
+        <div key={index} className="border border-gray-200 rounded-lg p-3 bg-gray-50">
           <ItemHeader title={`Certification ${index + 1}`} onRemove={() => removeItem(index)} />
           <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
