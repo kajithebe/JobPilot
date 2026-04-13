@@ -1,15 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Landing from './pages/Landing.jsx';
 import NotFound from './pages/NotFound.jsx';
-
-// Placeholder — will be replaced in later sprints
-const Dashboard = () => (
-  <div className="p-8 text-white bg-[#080d1a] min-h-screen">Dashboard — coming soon!</div>
-);
+import ResumesPage from './pages/ResumesPage.jsx';
+import ResumeEditorPage from './pages/ResumeEditorPage.jsx';
 
 const App = () => {
   return (
@@ -23,10 +20,18 @@ const App = () => {
 
         {/* Protected routes */}
         <Route
-          path="/dashboard"
+          path="/resumes"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <ResumesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/resumes/:id"
+          element={
+            <ProtectedRoute>
+              <ResumeEditorPage />
             </ProtectedRoute>
           }
         />
