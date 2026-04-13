@@ -363,23 +363,27 @@ const ProjectsSection = ({ data, onChange }) => {
               onChange={(v) => updateItem(index, 'description', v)}
               placeholder="What did you build and what technologies did you use?"
             />
-            <Field
-              label="Technologies (comma separated)"
-              value={
-                Array.isArray(item.technologies) ? item.technologies.join(', ') : item.technologies
-              }
-              onChange={(v) =>
-                updateItem(
-                  index,
-                  'technologies',
-                  v
-                    .split(',')
-                    .map((t) => t.trim())
-                    .filter(Boolean)
-                )
-              }
-              placeholder="React, Node.js, PostgreSQL"
-            />
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Technologies (comma separated)
+              </label>
+              <input
+                type="text"
+                defaultValue={Array.isArray(item.technologies) ? item.technologies.join(', ') : ''}
+                onBlur={(e) =>
+                  updateItem(
+                    index,
+                    'technologies',
+                    e.target.value
+                      .split(',')
+                      .map((t) => t.trim())
+                      .filter(Boolean)
+                  )
+                }
+                placeholder="React, Node.js, PostgreSQL"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-900 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
+              />
+            </div>
           </div>
         </div>
       ))}
