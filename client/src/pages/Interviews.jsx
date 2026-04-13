@@ -1,4 +1,3 @@
-// BACKEND: Will connect to GET /api/interviews and POST /api/interviews
 export default function Interviews() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-12 shadow-sm text-center">

@@ -6,7 +6,7 @@ import TopBar from './TopBar.jsx';
 // Maps each route to the page title shown in the top bar
 const pageTitles = {
   '/dashboard': 'Dashboard',
-  '/resume-builder': 'Resume Builder',
+  '/resumes': 'Resume Builder',
   '/job-tracker': 'Job Tracker',
   '/interviews': 'Interviews',
   '/ats-checker': 'ATS Checker',

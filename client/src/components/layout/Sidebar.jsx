@@ -26,7 +26,7 @@ const navItems = [
   },
   {
     label: 'Resume Builder',
-    path: '/resume-builder',
+    path: '/resumes',
     icon: (
       <svg
         width="18"
