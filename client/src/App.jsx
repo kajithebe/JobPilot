@@ -34,7 +34,7 @@ const App = () => {
           }
         />
         <Route
-          path="/resume-builder"
+          path="/resumes"
           element={
             <ProtectedRoute>
               <DashboardLayout>
