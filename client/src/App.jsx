@@ -5,12 +5,14 @@ import DashboardLayout from './components/layout/DashboardLayout.jsx';
 import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import ResumeBuilder from './pages/ResumeBuilder.jsx';
 import JobTracker from './pages/JobTracker.jsx';
 import Interviews from './pages/Interviews.jsx';
 import ATSChecker from './pages/ATSChecker.jsx';
 import Settings from './pages/Settings.jsx';
+import ResumesPage from './pages/ResumesPage.jsx';
+import ResumeEditorPage from './pages/ResumeEditorPage.jsx';
 
 const App = () => {
   return (
@@ -22,7 +24,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected routes — all wrapped in DashboardLayout */}
+        {/* Protected routes — inside DashboardLayout */}
         <Route
           path="/dashboard"
           element={
@@ -38,7 +40,7 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                <ResumeBuilder />
+                <ResumesPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
@@ -84,8 +86,18 @@ const App = () => {
           }
         />
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Resume editor — full screen, NO DashboardLayout */}
+        <Route
+          path="/resumes/:id"
+          element={
+            <ProtectedRoute>
+              <ResumeEditorPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 fallback */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
