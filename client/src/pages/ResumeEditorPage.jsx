@@ -5,6 +5,7 @@ import EditorPanel from '../components/resume/EditorPanel.jsx';
 import CVPreview from '../components/resume/CVPreview.jsx';
 import TemplateSwitcher from '../components/resume/TemplateSwitcher.jsx';
 import toast from 'react-hot-toast';
+import VersionHistory from '../components/resume/VersionHistory.jsx';
 
 const ResumeEditorPage = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const ResumeEditorPage = () => {
   const [showTemplateSwitcher, setShowTemplateSwitcher] = useState(false);
   const [versionName, setVersionName] = useState('');
   const [showVersionModal, setShowVersionModal] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
 
   useEffect(() => {
     fetchResume();
@@ -71,6 +73,17 @@ const ResumeEditorPage = () => {
     }
   };
 
+  const handleRestore = async (version) => {
+    await updateResume(id, {
+      template: version.template,
+      theme_config: version.theme_config,
+      content: version.content,
+      section_order: version.section_order,
+    });
+    const updated = { ...resume, ...version };
+    setResume(updated);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -107,6 +120,14 @@ const ResumeEditorPage = () => {
           >
             Template & Theme
           </button>
+
+          <button
+            onClick={() => setShowVersionHistory(true)}
+            className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition"
+          >
+            History
+          </button>
+
           <button
             onClick={() => setShowVersionModal(true)}
             className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
@@ -176,6 +197,16 @@ const ResumeEditorPage = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Version History Panel */}
+      {showVersionHistory && (
+        <VersionHistory
+          resumeId={id}
+          currentResume={resume}
+          onRestore={handleRestore}
+          onClose={() => setShowVersionHistory(false)}
+        />
       )}
     </div>
   );
