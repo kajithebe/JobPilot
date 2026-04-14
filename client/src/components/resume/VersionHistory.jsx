@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
-import { getVersions } from '../../services/resume.service.js';
+import { getVersions, deleteVersion } from '../../services/resume.service.js';
 import toast from 'react-hot-toast';
 
 const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
   const [versions, setVersions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [restoringId, setRestoringId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [confirmAction, setConfirmAction] = useState(null);
+  // confirmAction: { type: 'restore' | 'delete', version }
 
   useEffect(() => {
     fetchVersions();
@@ -22,18 +25,30 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
     }
   };
 
-  const handleRestore = async (version) => {
-    if (!confirm(`Restore "${version.version_name}"? Current unsaved changes will be overwritten.`))
-      return;
+  const handleRestoreConfirmed = async (version) => {
+    setConfirmAction(null);
     setRestoringId(version.id);
     try {
       await onRestore(version);
       toast.success(`Restored "${version.version_name}"`);
-      onClose();
     } catch {
       toast.error('Failed to restore version');
     } finally {
       setRestoringId(null);
+    }
+  };
+
+  const handleDeleteConfirmed = async (version) => {
+    setConfirmAction(null);
+    setDeletingId(version.id);
+    try {
+      await deleteVersion(resumeId, version.id);
+      setVersions((prev) => prev.filter((v) => v.id !== version.id));
+      toast.success(`Deleted "${version.version_name}"`);
+    } catch {
+      toast.error('Failed to delete version');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -52,7 +67,6 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-start justify-end z-50">
-      {/* Slide-over panel */}
       <div className="bg-white h-full w-full max-w-sm shadow-xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
@@ -85,10 +99,13 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
             <div className="space-y-3">
               {versions.map((version) => {
                 const diffs = getDiff(version);
+                const isRestoring = restoringId === version.id;
+                const isDeleting = deletingId === version.id;
+
                 return (
                   <div
                     key={version.id}
-                    className="border border-gray-200 rounded-xl p-4 hover:border-blue-300 hover:bg-blue-50/30 transition group"
+                    className="border border-gray-200 rounded-xl p-4 hover:border-blue-200 transition"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -107,8 +124,6 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
                             minute: '2-digit',
                           })}
                         </p>
-
-                        {/* Diff indicators */}
                         {diffs.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {diffs.map((diff, i) => (
@@ -123,14 +138,23 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
                         )}
                       </div>
 
-                      {/* Restore button */}
-                      <button
-                        onClick={() => handleRestore(version)}
-                        disabled={restoringId === version.id}
-                        className="text-xs px-3 py-1.5 border border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 rounded-lg transition opacity-0 group-hover:opacity-100 disabled:opacity-50 whitespace-nowrap"
-                      >
-                        {restoringId === version.id ? 'Restoring...' : 'Restore'}
-                      </button>
+                      {/* Actions */}
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => setConfirmAction({ type: 'restore', version })}
+                          disabled={isRestoring || isDeleting}
+                          className="text-xs px-3 py-1.5 border border-gray-300 text-gray-500 hover:border-blue-400 hover:text-blue-600 rounded-lg transition disabled:opacity-40 whitespace-nowrap"
+                        >
+                          {isRestoring ? 'Restoring...' : 'Restore'}
+                        </button>
+                        <button
+                          onClick={() => setConfirmAction({ type: 'delete', version })}
+                          disabled={isRestoring || isDeleting}
+                          className="text-xs px-3 py-1.5 border border-gray-300 text-gray-400 hover:border-red-300 hover:text-red-500 rounded-lg transition disabled:opacity-40 whitespace-nowrap"
+                        >
+                          {isDeleting ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -139,6 +163,65 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
           )}
         </div>
       </div>
+
+      {/* Inline confirmation modal — replaces browser confirm() */}
+      {confirmAction && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-60">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm shadow-lg mx-4">
+            {confirmAction.type === 'restore' ? (
+              <>
+                <h4 className="text-gray-900 font-semibold mb-1">Restore Version</h4>
+                <p className="text-gray-500 text-sm mb-4">
+                  Restore{' '}
+                  <span className="font-medium text-gray-700">
+                    "{confirmAction.version.version_name}"
+                  </span>
+                  ? Current unsaved changes will be overwritten.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setConfirmAction(null)}
+                    className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleRestoreConfirmed(confirmAction.version)}
+                    className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                  >
+                    Restore
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h4 className="text-gray-900 font-semibold mb-1">Delete Version</h4>
+                <p className="text-gray-500 text-sm mb-4">
+                  Permanently delete{' '}
+                  <span className="font-medium text-gray-700">
+                    "{confirmAction.version.version_name}"
+                  </span>
+                  ? This cannot be undone.
+                </p>
+                <div className="flex gap-2 justify-end">
+                  <button
+                    onClick={() => setConfirmAction(null)}
+                    className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDeleteConfirmed(confirmAction.version)}
+                    className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

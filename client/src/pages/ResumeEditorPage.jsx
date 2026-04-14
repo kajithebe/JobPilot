@@ -4,8 +4,8 @@ import { getResumeById, updateResume, createVersion } from '../services/resume.s
 import EditorPanel from '../components/resume/EditorPanel.jsx';
 import CVPreview from '../components/resume/CVPreview.jsx';
 import TemplateSwitcher from '../components/resume/TemplateSwitcher.jsx';
-import toast from 'react-hot-toast';
 import VersionHistory from '../components/resume/VersionHistory.jsx';
+import toast from 'react-hot-toast';
 
 const ResumeEditorPage = () => {
   const { id } = useParams();
@@ -74,14 +74,26 @@ const ResumeEditorPage = () => {
   };
 
   const handleRestore = async (version) => {
-    await updateResume(id, {
-      template: version.template,
-      theme_config: version.theme_config,
-      content: version.content,
-      section_order: version.section_order,
-    });
-    const updated = { ...resume, ...version };
-    setResume(updated);
+    try {
+      await updateResume(id, {
+        template: version.template,
+        theme_config: version.theme_config,
+        content: version.content,
+        section_order: version.section_order,
+      });
+
+      setResume({
+        ...resume,
+        template: version.template,
+        theme_config: version.theme_config,
+        content: version.content,
+        section_order: version.section_order,
+      });
+
+      setShowTemplateSwitcher(false);
+    } catch {
+      toast.error('Failed to restore version');
+    }
   };
 
   if (loading) {
@@ -120,14 +132,12 @@ const ResumeEditorPage = () => {
           >
             Template & Theme
           </button>
-
           <button
             onClick={() => setShowVersionHistory(true)}
             className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition"
           >
             History
           </button>
-
           <button
             onClick={() => setShowVersionModal(true)}
             className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
