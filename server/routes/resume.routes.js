@@ -7,6 +7,7 @@ import {
   deleteResume,
   createVersion,
   getVersions,
+  deleteVersion,
 } from '../controllers/resume.controller.js';
 import verifyToken from '../middleware/auth.middleware.js';
 
@@ -22,5 +23,6 @@ router.put('/:id', updateResume);
 router.delete('/:id', deleteResume);
 router.post('/:id/versions', createVersion);
 router.get('/:id/versions', getVersions);
+router.delete('/:id/versions/:versionId', deleteVersion);
 
 export default router;

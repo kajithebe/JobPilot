@@ -220,7 +220,7 @@ export const getVersions = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, resume_id, version_name, template, theme_config, section_order, created_at
+      `SELECT id, resume_id, version_name, template, theme_config, content, section_order, created_at
        FROM resume_versions
        WHERE resume_id = $1 AND user_id = $2
        ORDER BY created_at DESC`,
@@ -230,6 +230,30 @@ export const getVersions = async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Get versions error:', err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+};
+
+// DELETE /api/resumes/:id/versions/:versionId
+export const deleteVersion = async (req, res) => {
+  const user_id = req.user.id;
+  const {id, versionId} = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM resume_versions
+       WHERE id = $1 AND resume_id = $2 AND user_id = $3
+       RETURNING id`,
+      [versionId, id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: 'Version not found'});
+    }
+
+    res.json({message: 'Version deleted successfully'});
+  } catch (err) {
+    console.error('Delete version error:', err);
     res.status(500).json({error: 'Internal server error'});
   }
 };
