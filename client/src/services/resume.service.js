@@ -67,3 +67,12 @@ export const getVersions = async (id) => {
   const response = await api.get(`/resumes/${id}/versions`);
   return response.data;
 };
+
+/**
+ * BACKEND: DELETE /api/resumes/:id/versions/:versionId
+ * Permanently deletes a version snapshot
+ */
+export const deleteVersion = async (resumeId, versionId) => {
+  const response = await api.delete(`/resumes/${resumeId}/versions/${versionId}`);
+  return response.data;
+};
