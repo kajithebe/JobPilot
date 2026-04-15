@@ -18,9 +18,9 @@ const THEMES = [
 ];
 
 const FONTS = [
-  { id: 'Inter, sans-serif', label: 'Inter' },
-  { id: 'Merriweather, serif', label: 'Merriweather' },
-  { id: 'Roboto Mono, monospace', label: 'Roboto Mono' },
+  { id: 'Helvetica, Arial, sans-serif', label: 'Helvetica' },
+  { id: 'Georgia, serif', label: 'Georgia' },
+  { id: 'Tahoma, Geneva, sans-serif', label: 'Tahoma' },
 ];
 
 const TemplateSwitcher = ({ template, themeConfig, onChange, onClose }) => {
