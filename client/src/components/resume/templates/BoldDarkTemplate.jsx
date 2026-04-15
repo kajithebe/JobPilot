@@ -1,4 +1,4 @@
-export default function BoldDarkTemplate({ content, themeConfig }) {
+export default function BoldDarkTemplate({ content, themeConfig, sectionOrder }) {
   const theme = {
     primaryColor: themeConfig?.primaryColor || '#3b82f6',
     fontColor: themeConfig?.fontColor || '#f9fafb',
@@ -6,51 +6,54 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
     font: themeConfig?.font || 'Helvetica, Arial, sans-serif',
   };
 
-  return (
-    <div
-      className="w-[210mm] min-h-[297mm] shadow-2xl"
-      style={{
-        backgroundColor: theme.bgColor,
-        color: theme.fontColor,
-        fontFamily: theme.font,
-      }}
-    >
-      {/* Header — centered */}
-      <div
-        className="px-10 py-8 border-b text-center"
-        style={{ borderColor: `${theme.primaryColor}40` }}
-      >
-        <h1
-          className="text-2xl font-bold tracking-tight mb-2"
-          style={{ color: theme.primaryColor }}
-        >
-          {content?.personalInfo?.fullName || 'Your Name'}
-        </h1>
-        <div
-          className="flex flex-wrap gap-3 text-xs mt-2 justify-center"
-          style={{ color: `${theme.fontColor}80` }}
-        >
-          {content?.personalInfo?.email && <span>{content.personalInfo.email}</span>}
-          {content?.personalInfo?.phone && <span>• {content.personalInfo.phone}</span>}
-          {content?.personalInfo?.location && <span>• {content.personalInfo.location}</span>}
-          {content?.personalInfo?.linkedin && <span>• {content.personalInfo.linkedin}</span>}
-          {content?.personalInfo?.github && <span>• {content.personalInfo.github}</span>}
-        </div>
-        {content?.personalInfo?.summary && (
-          <p
-            className="text-xs mt-3 leading-relaxed max-w-xl mx-auto"
-            style={{ color: `${theme.fontColor}70` }}
-          >
-            {content.personalInfo.summary}
-          </p>
-        )}
-      </div>
+  const order = sectionOrder || [
+    'personalInfo',
+    'experience',
+    'education',
+    'skills',
+    'projects',
+    'certifications',
+  ];
 
-      {/* Body */}
-      <div className="px-10 py-6 space-y-6">
-        {/* Experience */}
-        {content?.experience?.length > 0 && (
-          <div>
+  const renderSection = (sectionKey) => {
+    switch (sectionKey) {
+      case 'personalInfo':
+        return (
+          <div
+            key="personalInfo"
+            className="px-10 py-8 border-b text-center"
+            style={{ borderColor: `${theme.primaryColor}40` }}
+          >
+            <h1
+              className="text-2xl font-bold tracking-tight mb-2"
+              style={{ color: theme.primaryColor }}
+            >
+              {content?.personalInfo?.fullName || 'Your Name'}
+            </h1>
+            <div
+              className="flex flex-wrap gap-3 text-xs mt-2 justify-center"
+              style={{ color: `${theme.fontColor}80` }}
+            >
+              {content?.personalInfo?.email && <span>{content.personalInfo.email}</span>}
+              {content?.personalInfo?.phone && <span>• {content.personalInfo.phone}</span>}
+              {content?.personalInfo?.location && <span>• {content.personalInfo.location}</span>}
+              {content?.personalInfo?.linkedin && <span>• {content.personalInfo.linkedin}</span>}
+              {content?.personalInfo?.github && <span>• {content.personalInfo.github}</span>}
+            </div>
+            {content?.personalInfo?.summary && (
+              <p
+                className="text-xs mt-3 leading-relaxed max-w-xl mx-auto"
+                style={{ color: `${theme.fontColor}70` }}
+              >
+                {content.personalInfo.summary}
+              </p>
+            )}
+          </div>
+        );
+
+      case 'experience':
+        return content?.experience?.length ? (
+          <div key="experience" className="px-10 pt-6">
             <h2
               className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
@@ -94,11 +97,11 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
               ))}
             </div>
           </div>
-        )}
+        ) : null;
 
-        {/* Education */}
-        {content?.education?.length > 0 && (
-          <div>
+      case 'education':
+        return content?.education?.length ? (
+          <div key="education" className="px-10 pt-6">
             <h2
               className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
@@ -139,11 +142,11 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
               ))}
             </div>
           </div>
-        )}
+        ) : null;
 
-        {/* Skills */}
-        {content?.skills?.length > 0 && (
-          <div>
+      case 'skills':
+        return content?.skills?.length ? (
+          <div key="skills" className="px-10 pt-6">
             <h2
               className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
@@ -166,11 +169,11 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
               ))}
             </div>
           </div>
-        )}
+        ) : null;
 
-        {/* Projects */}
-        {content?.projects?.length > 0 && (
-          <div>
+      case 'projects':
+        return content?.projects?.length ? (
+          <div key="projects" className="px-10 pt-6">
             <h2
               className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
@@ -209,11 +212,11 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
               ))}
             </div>
           </div>
-        )}
+        ) : null;
 
-        {/* Certifications */}
-        {content?.certifications?.length > 0 && (
-          <div>
+      case 'certifications':
+        return content?.certifications?.length ? (
+          <div key="certifications" className="px-10 pt-6">
             <h2
               className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
@@ -239,8 +242,19 @@ export default function BoldDarkTemplate({ content, themeConfig }) {
               ))}
             </div>
           </div>
-        )}
-      </div>
+        ) : null;
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div
+      className="w-[210mm] min-h-[297mm] shadow-2xl"
+      style={{ backgroundColor: theme.bgColor, color: theme.fontColor, fontFamily: theme.font }}
+    >
+      <div className="pb-6">{order.map((sectionKey) => renderSection(sectionKey))}</div>
     </div>
   );
 }
