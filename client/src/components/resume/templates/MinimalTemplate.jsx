@@ -1,9 +1,9 @@
-export default function MinimalTemplate({ content, themeConfig, sectionOrder }) {
+export default function MinimalTemplate({ content, themeConfig }) {
   const theme = {
     primaryColor: themeConfig?.primaryColor || '#2563eb',
     fontColor: themeConfig?.fontColor || '#111827',
     bgColor: themeConfig?.bgColor || '#ffffff',
-    font: themeConfig?.font || 'Inter, sans-serif',
+    font: themeConfig?.font || 'Helvetica, Arial, sans-serif',
   };
 
   return (
@@ -15,16 +15,16 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
         fontFamily: theme.font,
       }}
     >
-      {/* Personal Info */}
+      {/* Personal Info — centered */}
       {content?.personalInfo && (
-        <div className="mb-10">
+        <div className="mb-10 text-center">
           <h1
-            className="text-4xl font-light tracking-tight mb-2"
-            style={{ color: theme.fontColor }}
+            className="text-3xl font-light tracking-tight mb-2"
+            style={{ color: theme.primaryColor }}
           >
             {content.personalInfo.fullName || 'Your Name'}
           </h1>
-          <div className="flex flex-wrap gap-3 text-[10px] text-gray-400">
+          <div className="flex flex-wrap gap-3 text-[11px] text-gray-400 justify-center">
             {content.personalInfo.email && <span>{content.personalInfo.email}</span>}
             {content.personalInfo.phone && <span>{content.personalInfo.phone}</span>}
             {content.personalInfo.location && <span>{content.personalInfo.location}</span>}
@@ -32,7 +32,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
             {content.personalInfo.github && <span>{content.personalInfo.github}</span>}
           </div>
           {content.personalInfo.summary && (
-            <p className="text-xs text-gray-500 mt-4 leading-relaxed max-w-lg">
+            <p className="text-xs text-gray-500 mt-4 leading-relaxed max-w-lg mx-auto">
               {content.personalInfo.summary}
             </p>
           )}
@@ -43,7 +43,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
       {content?.experience?.length > 0 && (
         <div className="mb-8">
           <h2
-            className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-4"
+            className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-4"
             style={{ color: theme.primaryColor }}
           >
             Experience
@@ -53,17 +53,17 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
               <div key={i}>
                 <div className="flex justify-between items-baseline">
                   <p className="text-sm font-medium">{item.title}</p>
-                  <p className="text-[9px] text-gray-400">
+                  <p className="text-[10px] text-gray-400">
                     {item.startDate}
                     {item.endDate ? ` – ${item.endDate}` : ''}
                   </p>
                 </div>
-                <p className="text-[10px] text-gray-400 mt-0.5">
+                <p className="text-[11px] text-gray-400 mt-0.5">
                   {item.company}
                   {item.location ? `, ${item.location}` : ''}
                 </p>
                 {item.description && (
-                  <p className="text-[10px] text-gray-500 mt-1.5 leading-relaxed">
+                  <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">
                     {item.description}
                   </p>
                 )}
@@ -77,7 +77,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
       {content?.education?.length > 0 && (
         <div className="mb-8">
           <h2
-            className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-4"
+            className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-4"
             style={{ color: theme.primaryColor }}
           >
             Education
@@ -90,10 +90,10 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
                     {item.degree}
                     {item.field ? ` in ${item.field}` : ''}
                   </p>
-                  <p className="text-[10px] text-gray-400">{item.institution}</p>
-                  {item.gpa && <p className="text-[9px] text-gray-400">GPA: {item.gpa}</p>}
+                  <p className="text-[11px] text-gray-400">{item.institution}</p>
+                  {item.gpa && <p className="text-[10px] text-gray-400">GPA: {item.gpa}</p>}
                 </div>
-                <p className="text-[9px] text-gray-400">
+                <p className="text-[10px] text-gray-400">
                   {item.startDate}
                   {item.endDate ? ` – ${item.endDate}` : ''}
                 </p>
@@ -107,7 +107,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
       {content?.skills?.length > 0 && (
         <div className="mb-8">
           <h2
-            className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-4"
+            className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-4"
             style={{ color: theme.primaryColor }}
           >
             Skills
@@ -134,7 +134,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
       {content?.projects?.length > 0 && (
         <div className="mb-8">
           <h2
-            className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-4"
+            className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-4"
             style={{ color: theme.primaryColor }}
           >
             Projects
@@ -144,15 +144,15 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
               <div key={i}>
                 <div className="flex justify-between items-baseline">
                   <p className="text-sm font-medium">{item.title}</p>
-                  {item.url && <p className="text-[9px] text-gray-400">{item.url}</p>}
+                  {item.url && <p className="text-[10px] text-gray-400">{item.url}</p>}
                 </div>
                 {item.description && (
-                  <p className="text-[10px] text-gray-500 mt-1 leading-relaxed">
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                     {item.description}
                   </p>
                 )}
                 {item.technologies?.length > 0 && (
-                  <p className="text-[9px] text-gray-400 mt-1">{item.technologies.join(' · ')}</p>
+                  <p className="text-[10px] text-gray-400 mt-1">{item.technologies.join(' · ')}</p>
                 )}
               </div>
             ))}
@@ -164,7 +164,7 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
       {content?.certifications?.length > 0 && (
         <div>
           <h2
-            className="text-[9px] uppercase tracking-[0.2em] font-semibold mb-4"
+            className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-4"
             style={{ color: theme.primaryColor }}
           >
             Certifications
@@ -174,9 +174,9 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
               <div key={i} className="flex justify-between items-baseline">
                 <div>
                   <p className="text-sm font-medium">{item.name}</p>
-                  <p className="text-[10px] text-gray-400">{item.issuer}</p>
+                  <p className="text-[11px] text-gray-400">{item.issuer}</p>
                 </div>
-                <p className="text-[9px] text-gray-400">{item.date}</p>
+                <p className="text-[10px] text-gray-400">{item.date}</p>
               </div>
             ))}
           </div>

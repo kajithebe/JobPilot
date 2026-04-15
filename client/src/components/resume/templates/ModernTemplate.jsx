@@ -3,13 +3,13 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
     primaryColor: themeConfig?.primaryColor || '#2563eb',
     fontColor: themeConfig?.fontColor || '#111827',
     bgColor: themeConfig?.bgColor || '#ffffff',
-    font: themeConfig?.font || 'Inter, sans-serif',
+    font: themeConfig?.font || 'Helvetica, Arial, sans-serif',
   };
 
   const SectionHeading = ({ title }) => (
     <div className="mb-3">
       <h2
-        className="text-sm font-bold uppercase tracking-widest pb-1 border-b"
+        className="text-xs font-bold uppercase tracking-widest pb-1 border-b"
         style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
       >
         {title}
@@ -26,12 +26,12 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
         fontFamily: theme.font,
       }}
     >
-      {/* Coloured header block */}
-      <div className="px-10 py-8 text-white" style={{ backgroundColor: theme.primaryColor }}>
-        <h1 className="text-3xl font-bold mb-1">
+      {/* Coloured header block — centered */}
+      <div className="px-10 py-8 text-white text-center" style={{ backgroundColor: theme.primaryColor }}>
+        <h1 className="text-2xl font-bold mb-1">
           {content?.personalInfo?.fullName || 'Your Name'}
         </h1>
-        <div className="flex flex-wrap gap-3 text-xs text-white/80 mt-2">
+        <div className="flex flex-wrap gap-3 text-xs text-white/80 mt-2 justify-center">
           {content?.personalInfo?.email && <span>{content.personalInfo.email}</span>}
           {content?.personalInfo?.phone && <span>• {content.personalInfo.phone}</span>}
           {content?.personalInfo?.location && <span>• {content.personalInfo.location}</span>}
@@ -39,7 +39,7 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
           {content?.personalInfo?.github && <span>• {content.personalInfo.github}</span>}
         </div>
         {content?.personalInfo?.summary && (
-          <p className="text-xs text-white/70 mt-3 leading-relaxed max-w-xl">
+          <p className="text-xs text-white/70 mt-3 leading-relaxed max-w-xl mx-auto">
             {content.personalInfo.summary}
           </p>
         )}
@@ -65,7 +65,7 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
                               {item.location ? ` — ${item.location}` : ''}
                             </p>
                           </div>
-                          <p className="text-xs text-gray-400 whitespace-nowrap ml-4">
+                          <p className="text-[11px] text-gray-400 whitespace-nowrap ml-4">
                             {item.startDate}
                             {item.endDate ? ` – ${item.endDate}` : ''}
                           </p>
@@ -95,9 +95,9 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
                             {item.field ? ` in ${item.field}` : ''}
                           </p>
                           <p className="text-xs text-gray-500">{item.institution}</p>
-                          {item.gpa && <p className="text-xs text-gray-400">GPA: {item.gpa}</p>}
+                          {item.gpa && <p className="text-[11px] text-gray-400">GPA: {item.gpa}</p>}
                         </div>
-                        <p className="text-xs text-gray-400 whitespace-nowrap ml-4">
+                        <p className="text-[11px] text-gray-400 whitespace-nowrap ml-4">
                           {item.startDate}
                           {item.endDate ? ` – ${item.endDate}` : ''}
                         </p>
@@ -140,7 +140,7 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
                       <div key={i}>
                         <div className="flex justify-between items-start">
                           <p className="text-sm font-semibold">{item.title}</p>
-                          {item.url && <p className="text-xs text-gray-400 ml-4">{item.url}</p>}
+                          {item.url && <p className="text-[11px] text-gray-400 ml-4">{item.url}</p>}
                         </div>
                         {item.description && (
                           <p className="text-xs text-gray-600 mt-1 leading-relaxed">
@@ -150,7 +150,7 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
                         {item.technologies?.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {item.technologies.map((tech, j) => (
-                              <span key={j} className="text-xs text-gray-400">
+                              <span key={j} className="text-[11px] text-gray-400">
                                 {tech}
                                 {j < item.technologies.length - 1 ? ' •' : ''}
                               </span>
@@ -175,7 +175,7 @@ export default function ModernTemplate({ content, themeConfig, sectionOrder }) {
                           <p className="text-sm font-semibold">{item.name}</p>
                           <p className="text-xs text-gray-500">{item.issuer}</p>
                         </div>
-                        <p className="text-xs text-gray-400 whitespace-nowrap ml-4">{item.date}</p>
+                        <p className="text-[11px] text-gray-400 whitespace-nowrap ml-4">{item.date}</p>
                       </div>
                     ))}
                   </div>

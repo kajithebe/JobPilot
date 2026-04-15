@@ -1,9 +1,9 @@
-export default function BoldDarkTemplate({ content, themeConfig, sectionOrder }) {
+export default function BoldDarkTemplate({ content, themeConfig }) {
   const theme = {
     primaryColor: themeConfig?.primaryColor || '#3b82f6',
     fontColor: themeConfig?.fontColor || '#f9fafb',
     bgColor: themeConfig?.bgColor || '#0f172a',
-    font: themeConfig?.font || 'Inter, sans-serif',
+    font: themeConfig?.font || 'Helvetica, Arial, sans-serif',
   };
 
   return (
@@ -15,16 +15,19 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         fontFamily: theme.font,
       }}
     >
-      {/* Header */}
-      <div className="px-10 py-8 border-b" style={{ borderColor: `${theme.primaryColor}40` }}>
+      {/* Header — centered */}
+      <div
+        className="px-10 py-8 border-b text-center"
+        style={{ borderColor: `${theme.primaryColor}40` }}
+      >
         <h1
-          className="text-3xl font-bold tracking-tight mb-2"
+          className="text-2xl font-bold tracking-tight mb-2"
           style={{ color: theme.primaryColor }}
         >
           {content?.personalInfo?.fullName || 'Your Name'}
         </h1>
         <div
-          className="flex flex-wrap gap-3 text-[10px] mt-2"
+          className="flex flex-wrap gap-3 text-xs mt-2 justify-center"
           style={{ color: `${theme.fontColor}80` }}
         >
           {content?.personalInfo?.email && <span>{content.personalInfo.email}</span>}
@@ -35,7 +38,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         </div>
         {content?.personalInfo?.summary && (
           <p
-            className="text-[10px] mt-3 leading-relaxed max-w-xl"
+            className="text-xs mt-3 leading-relaxed max-w-xl mx-auto"
             style={{ color: `${theme.fontColor}70` }}
           >
             {content.personalInfo.summary}
@@ -49,7 +52,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         {content?.experience?.length > 0 && (
           <div>
             <h2
-              className="text-[9px] uppercase tracking-[0.2em] font-bold mb-4"
+              className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
             >
               Experience
@@ -66,13 +69,13 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
                       <p className="text-xs font-semibold" style={{ color: theme.fontColor }}>
                         {item.title}
                       </p>
-                      <p className="text-[10px] mt-0.5" style={{ color: `${theme.fontColor}60` }}>
+                      <p className="text-[11px] mt-0.5" style={{ color: `${theme.fontColor}60` }}>
                         {item.company}
                         {item.location ? ` — ${item.location}` : ''}
                       </p>
                     </div>
                     <p
-                      className="text-[9px] whitespace-nowrap ml-4"
+                      className="text-[10px] whitespace-nowrap ml-4"
                       style={{ color: `${theme.fontColor}50` }}
                     >
                       {item.startDate}
@@ -81,7 +84,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
                   </div>
                   {item.description && (
                     <p
-                      className="text-[10px] mt-1.5 leading-relaxed"
+                      className="text-xs mt-1.5 leading-relaxed"
                       style={{ color: `${theme.fontColor}70` }}
                     >
                       {item.description}
@@ -97,7 +100,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         {content?.education?.length > 0 && (
           <div>
             <h2
-              className="text-[9px] uppercase tracking-[0.2em] font-bold mb-4"
+              className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
             >
               Education
@@ -115,17 +118,17 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
                         {item.degree}
                         {item.field ? ` in ${item.field}` : ''}
                       </p>
-                      <p className="text-[10px] mt-0.5" style={{ color: `${theme.fontColor}60` }}>
+                      <p className="text-[11px] mt-0.5" style={{ color: `${theme.fontColor}60` }}>
                         {item.institution}
                       </p>
                       {item.gpa && (
-                        <p className="text-[9px]" style={{ color: `${theme.fontColor}50` }}>
+                        <p className="text-[10px]" style={{ color: `${theme.fontColor}50` }}>
                           GPA: {item.gpa}
                         </p>
                       )}
                     </div>
                     <p
-                      className="text-[9px] whitespace-nowrap ml-4"
+                      className="text-[10px] whitespace-nowrap ml-4"
                       style={{ color: `${theme.fontColor}50` }}
                     >
                       {item.startDate}
@@ -142,7 +145,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         {content?.skills?.length > 0 && (
           <div>
             <h2
-              className="text-[9px] uppercase tracking-[0.2em] font-bold mb-4"
+              className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
             >
               Skills
@@ -169,7 +172,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         {content?.projects?.length > 0 && (
           <div>
             <h2
-              className="text-[9px] uppercase tracking-[0.2em] font-bold mb-4"
+              className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
             >
               Projects
@@ -184,21 +187,21 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
                   <div className="flex justify-between items-start">
                     <p className="text-xs font-semibold">{item.title}</p>
                     {item.url && (
-                      <p className="text-[9px] ml-4" style={{ color: `${theme.fontColor}50` }}>
+                      <p className="text-[10px] ml-4" style={{ color: `${theme.fontColor}50` }}>
                         {item.url}
                       </p>
                     )}
                   </div>
                   {item.description && (
                     <p
-                      className="text-[10px] mt-1 leading-relaxed"
+                      className="text-xs mt-1 leading-relaxed"
                       style={{ color: `${theme.fontColor}70` }}
                     >
                       {item.description}
                     </p>
                   )}
                   {item.technologies?.length > 0 && (
-                    <p className="text-[9px] mt-1" style={{ color: `${theme.fontColor}50` }}>
+                    <p className="text-[10px] mt-1" style={{ color: `${theme.fontColor}50` }}>
                       {item.technologies.join(' · ')}
                     </p>
                   )}
@@ -212,7 +215,7 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
         {content?.certifications?.length > 0 && (
           <div>
             <h2
-              className="text-[9px] uppercase tracking-[0.2em] font-bold mb-4"
+              className="text-[11px] uppercase tracking-[0.2em] font-bold mb-4"
               style={{ color: theme.primaryColor }}
             >
               Certifications
@@ -222,12 +225,12 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
                 <div key={i} className="flex justify-between items-start">
                   <div>
                     <p className="text-xs font-semibold">{item.name}</p>
-                    <p className="text-[10px]" style={{ color: `${theme.fontColor}60` }}>
+                    <p className="text-[11px]" style={{ color: `${theme.fontColor}60` }}>
                       {item.issuer}
                     </p>
                   </div>
                   <p
-                    className="text-[9px] whitespace-nowrap ml-4"
+                    className="text-[10px] whitespace-nowrap ml-4"
                     style={{ color: `${theme.fontColor}50` }}
                   >
                     {item.date}

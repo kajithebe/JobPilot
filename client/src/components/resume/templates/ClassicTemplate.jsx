@@ -1,13 +1,10 @@
-export default function ClassicTemplate({ content, themeConfig, sectionOrder }) {
+export default function ClassicTemplate({ content, themeConfig }) {
   const theme = {
     primaryColor: themeConfig?.primaryColor || '#2563eb',
     fontColor: themeConfig?.fontColor || '#111827',
     bgColor: themeConfig?.bgColor || '#ffffff',
-    font: themeConfig?.font || 'Inter, sans-serif',
+    font: themeConfig?.font || 'Helvetica, Arial, sans-serif',
   };
-
-  const leftSections = ['personalInfo', 'skills', 'certifications'];
-  const rightSections = ['experience', 'education', 'projects'];
 
   return (
     <div
@@ -33,19 +30,19 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
           </h1>
           <div className="space-y-1 mt-3">
             {content?.personalInfo?.email && (
-              <p className="text-[10px] text-gray-600 break-all">{content.personalInfo.email}</p>
+              <p className="text-[11px] text-gray-600 break-all">{content.personalInfo.email}</p>
             )}
             {content?.personalInfo?.phone && (
-              <p className="text-[10px] text-gray-600">{content.personalInfo.phone}</p>
+              <p className="text-[11px] text-gray-600">{content.personalInfo.phone}</p>
             )}
             {content?.personalInfo?.location && (
-              <p className="text-[10px] text-gray-600">{content.personalInfo.location}</p>
+              <p className="text-[11px] text-gray-600">{content.personalInfo.location}</p>
             )}
             {content?.personalInfo?.linkedin && (
-              <p className="text-[10px] text-gray-600 break-all">{content.personalInfo.linkedin}</p>
+              <p className="text-[11px] text-gray-600 break-all">{content.personalInfo.linkedin}</p>
             )}
             {content?.personalInfo?.github && (
-              <p className="text-[10px] text-gray-600 break-all">{content.personalInfo.github}</p>
+              <p className="text-[11px] text-gray-600 break-all">{content.personalInfo.github}</p>
             )}
           </div>
         </div>
@@ -54,12 +51,12 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.personalInfo?.summary && (
           <div className="mb-6">
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               About
             </h2>
-            <p className="text-[10px] text-gray-600 leading-relaxed">
+            <p className="text-[11px] text-gray-600 leading-relaxed">
               {content.personalInfo.summary}
             </p>
           </div>
@@ -69,7 +66,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.skills?.length > 0 && (
           <div className="mb-6">
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               Skills
@@ -78,7 +75,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
               {content.skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="text-[9px] px-1.5 py-0.5 rounded"
+                  className="text-[10px] px-1.5 py-0.5 rounded"
                   style={{
                     backgroundColor: `${theme.primaryColor}18`,
                     color: theme.primaryColor,
@@ -96,7 +93,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.certifications?.length > 0 && (
           <div>
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-2"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               Certifications
@@ -104,8 +101,8 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
             <div className="space-y-2">
               {content.certifications.map((cert, i) => (
                 <div key={i}>
-                  <p className="text-[10px] font-semibold">{cert.name}</p>
-                  <p className="text-[9px] text-gray-500">
+                  <p className="text-[11px] font-semibold">{cert.name}</p>
+                  <p className="text-[10px] text-gray-500">
                     {cert.issuer} · {cert.date}
                   </p>
                 </div>
@@ -121,7 +118,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.experience?.length > 0 && (
           <div className="mb-6">
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               Experience
@@ -132,18 +129,18 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-xs font-semibold">{item.title}</p>
-                      <p className="text-[10px] text-gray-500">
+                      <p className="text-[11px] text-gray-500">
                         {item.company}
                         {item.location ? ` — ${item.location}` : ''}
                       </p>
                     </div>
-                    <p className="text-[9px] text-gray-400 whitespace-nowrap ml-4">
+                    <p className="text-[10px] text-gray-400 whitespace-nowrap ml-4">
                       {item.startDate}
                       {item.endDate ? ` – ${item.endDate}` : ''}
                     </p>
                   </div>
                   {item.description && (
-                    <p className="text-[10px] text-gray-600 mt-1 leading-relaxed">
+                    <p className="text-[11px] text-gray-600 mt-1 leading-relaxed">
                       {item.description}
                     </p>
                   )}
@@ -157,7 +154,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.education?.length > 0 && (
           <div className="mb-6">
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               Education
@@ -170,10 +167,10 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
                       {item.degree}
                       {item.field ? ` in ${item.field}` : ''}
                     </p>
-                    <p className="text-[10px] text-gray-500">{item.institution}</p>
-                    {item.gpa && <p className="text-[9px] text-gray-400">GPA: {item.gpa}</p>}
+                    <p className="text-[11px] text-gray-500">{item.institution}</p>
+                    {item.gpa && <p className="text-[10px] text-gray-400">GPA: {item.gpa}</p>}
                   </div>
-                  <p className="text-[9px] text-gray-400 whitespace-nowrap ml-4">
+                  <p className="text-[10px] text-gray-400 whitespace-nowrap ml-4">
                     {item.startDate}
                     {item.endDate ? ` – ${item.endDate}` : ''}
                   </p>
@@ -187,7 +184,7 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
         {content?.projects?.length > 0 && (
           <div>
             <h2
-              className="text-[10px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
+              className="text-[11px] font-bold uppercase tracking-widest pb-1 border-b mb-3"
               style={{ color: theme.primaryColor, borderColor: theme.primaryColor }}
             >
               Projects
@@ -197,17 +194,17 @@ export default function ClassicTemplate({ content, themeConfig, sectionOrder }) 
                 <div key={i}>
                   <div className="flex justify-between items-start">
                     <p className="text-xs font-semibold">{item.title}</p>
-                    {item.url && <p className="text-[9px] text-gray-400 ml-4">{item.url}</p>}
+                    {item.url && <p className="text-[10px] text-gray-400 ml-4">{item.url}</p>}
                   </div>
                   {item.description && (
-                    <p className="text-[10px] text-gray-600 mt-1 leading-relaxed">
+                    <p className="text-[11px] text-gray-600 mt-1 leading-relaxed">
                       {item.description}
                     </p>
                   )}
                   {item.technologies?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.technologies.map((tech, j) => (
-                        <span key={j} className="text-[9px] text-gray-400">
+                        <span key={j} className="text-[10px] text-gray-400">
                           {tech}
                           {j < item.technologies.length - 1 ? ' •' : ''}
                         </span>
