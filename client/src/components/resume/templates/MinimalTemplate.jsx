@@ -112,9 +112,21 @@ export default function MinimalTemplate({ content, themeConfig, sectionOrder }) 
           >
             Skills
           </h2>
-          <p className="text-[10px] text-gray-500 leading-relaxed">
-            {content.skills.map((s) => (typeof s === 'string' ? s : s.name)).join(' · ')}
-          </p>
+          <div className="flex flex-wrap gap-2">
+            {content.skills.map((skill, i) => (
+              <span
+                key={i}
+                className="text-xs px-2 py-0.5 rounded"
+                style={{
+                  backgroundColor: `${theme.primaryColor}18`,
+                  color: theme.primaryColor,
+                  border: `1px solid ${theme.primaryColor}40`,
+                }}
+              >
+                {typeof skill === 'string' ? skill : skill.name}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

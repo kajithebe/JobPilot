@@ -127,17 +127,19 @@ export default function ExecutiveTemplate({ content, themeConfig, sectionOrder }
               </h2>
               <div className="flex-1 h-px" style={{ backgroundColor: `${theme.primaryColor}30` }} />
             </div>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex flex-wrap gap-2">
               {content.skills.map((skill, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <div
-                    className="w-1 h-1 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: theme.primaryColor }}
-                  />
-                  <span className="text-[10px] text-gray-700">
-                    {typeof skill === 'string' ? skill : skill.name}
-                  </span>
-                </div>
+                <span
+                  key={i}
+                  className="text-xs px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: `${theme.primaryColor}18`,
+                    color: theme.primaryColor,
+                    border: `1px solid ${theme.primaryColor}40`,
+                  }}
+                >
+                  {typeof skill === 'string' ? skill : skill.name}
+                </span>
               ))}
             </div>
           </div>

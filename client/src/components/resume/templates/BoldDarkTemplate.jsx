@@ -151,9 +151,9 @@ export default function BoldDarkTemplate({ content, themeConfig, sectionOrder })
               {content.skills.map((skill, i) => (
                 <span
                   key={i}
-                  className="text-[9px] px-2 py-0.5 rounded"
+                  className="text-xs px-2 py-0.5 rounded"
                   style={{
-                    backgroundColor: `${theme.primaryColor}20`,
+                    backgroundColor: `${theme.primaryColor}18`,
                     color: theme.primaryColor,
                     border: `1px solid ${theme.primaryColor}40`,
                   }}
