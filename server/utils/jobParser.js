@@ -69,3 +69,34 @@ export const extractFromJSONLD = ($) => {
 
   return result;
 };
+
+// Parser Step 2: Extract from OG meta tags
+export const extractFromOGTags = ($, url) => {
+  const title = cleanText(
+    $('meta[property="og:title"]').attr('content') ||
+      $('meta[name="twitter:title"]').attr('content') ||
+      $('title').text() ||
+      ''
+  );
+
+  const description = cleanText(
+    $('meta[property="og:description"]').attr('content') ||
+      $('meta[name="description"]').attr('content') ||
+      $('meta[name="twitter:description"]').attr('content') ||
+      ''
+  );
+
+  const siteName = cleanText(
+    $('meta[property="og:site_name"]').attr('content') || ''
+  );
+
+  if (!title) return null;
+
+  return {
+    title,
+    company: siteName || extractDomain(url),
+    location: '',
+    description,
+    source: 'og-tags',
+  };
+};
