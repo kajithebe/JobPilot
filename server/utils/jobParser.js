@@ -33,3 +33,39 @@ export const extractDomain = (url) => {
     return '';
   }
 };
+
+// Parser Step 1: Extract from JSON-LD structured data
+export const extractFromJSONLD = ($) => {
+  const scripts = $('script[type="application/ld+json"]');
+  let result = null;
+
+  scripts.each((_, el) => {
+    try {
+      const data = JSON.parse($(el).html());
+
+      // Handle both single object and @graph array
+      const items = data['@graph'] ? data['@graph'] : [data];
+
+      for (const item of items) {
+        if (item['@type'] === 'JobPosting') {
+          result = {
+            title: cleanText(item.title || ''),
+            company: cleanText(item.hiringOrganization?.name || ''),
+            location: cleanText(
+              typeof item.jobLocation === 'string'
+                ? item.jobLocation
+                : item.jobLocation?.address?.addressLocality ||
+                    item.jobLocation?.address?.addressRegion ||
+                    ''
+            ),
+            description: cleanText(item.description || ''),
+            source: 'json-ld',
+          };
+          return false; // break each loop
+        }
+      }
+    } catch {}
+  });
+
+  return result;
+};
