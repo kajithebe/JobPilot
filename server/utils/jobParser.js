@@ -100,3 +100,27 @@ export const extractFromOGTags = ($, url) => {
     source: 'og-tags',
   };
 };
+
+// Parser Step 3: Domain name fallback
+export const extractFromDomain = (url) => {
+  return {
+    title: '',
+    company: extractDomain(url),
+    location: '',
+    description: '',
+    source: 'domain-fallback',
+  };
+};
+
+// Main parser — tries each strategy in order
+export const parseJobPosting = async (url) => {
+  const $ = await fetchHTML(url);
+
+  const jsonld = extractFromJSONLD($);
+  if (jsonld?.title && jsonld?.company) return jsonld;
+
+  const og = extractFromOGTags($, url);
+  if (og?.title) return og;
+
+  return extractFromDomain(url);
+};
