@@ -29,7 +29,3 @@ const EmptyState = ({ status, onAdd }) => {
 };
 
 export default EmptyState;
-Save, commit:
-cd ..
-git add .
-git commit -m "feat: add empty state component for kanban columns"
