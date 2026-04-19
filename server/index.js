@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.routes.js';
 import resumeRoutes from './routes/resume.routes.js';
 import atsRoutes from './routes/ats.routes.js';
 import applicationRoutes from './routes/application.routes.js';
+import importerRoutes from './routes/importer.routes.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/resumes', resumeRoutes);
 app.use('/api/ats', atsRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/import', importerRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({status: 'ok', message: 'JobPilot API is running'});
