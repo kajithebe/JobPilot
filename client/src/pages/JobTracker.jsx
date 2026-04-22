@@ -1,9 +1,47 @@
+/**
+ * JOB TRACKER PAGE
+ * ─────────────────────────────────────────────────────────────
+ * BACKEND: GET /api/applications — loads all applications on mount
+ * BACKEND: POST /api/applications — creates new application
+ * BACKEND: PATCH /api/applications/:id/status — drag to new column
+ * BACKEND: DELETE /api/applications/:id — soft delete
+ * ─────────────────────────────────────────────────────────────
+ */
+
 import { useState, useEffect } from 'react';
+import { getApplications, deleteApplication } from '../services/application.service.js';
 import toast from 'react-hot-toast';
 
 export default function JobTracker() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // BACKEND: GET /api/applications — load all applications on mount
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const res = await getApplications();
+        setApplications(res.data || []);
+      } catch {
+        toast.error('Failed to load applications');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApplications();
+  }, []);
+
+  // BACKEND: DELETE /api/applications/:id — soft delete
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this application?')) return;
+    try {
+      await deleteApplication(id);
+      setApplications((prev) => prev.filter((a) => a.id !== id));
+      toast.success('Application deleted');
+    } catch {
+      toast.error('Failed to delete application');
+    }
+  };
 
   if (loading) {
     return (
