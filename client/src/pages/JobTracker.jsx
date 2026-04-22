@@ -9,12 +9,18 @@
  */
 
 import { useState, useEffect } from 'react';
-import { getApplications, deleteApplication } from '../services/application.service.js';
+import {
+  getApplications,
+  createApplication,
+  deleteApplication,
+} from '../services/application.service.js';
+import AddApplicationModal from '../components/tracker/AddApplicationModal.jsx';
 import toast from 'react-hot-toast';
 
 export default function JobTracker() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   // BACKEND: GET /api/applications — load all applications on mount
   useEffect(() => {
@@ -30,6 +36,13 @@ export default function JobTracker() {
     };
     fetchApplications();
   }, []);
+
+  // BACKEND: POST /api/applications
+  const handleSave = async (form) => {
+    const res = await createApplication(form);
+    setApplications((prev) => [res.data, ...prev]);
+    toast.success('Application added!');
+  };
 
   // BACKEND: DELETE /api/applications/:id — soft delete
   const handleDelete = async (id) => {
@@ -61,15 +74,21 @@ export default function JobTracker() {
             {applications.length} application{applications.length !== 1 ? 's' : ''} tracked
           </p>
         </div>
-        <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition border-none cursor-pointer">
+        <button
+          onClick={() => setShowModal(true)}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition border-none cursor-pointer"
+        >
           + Add Application
         </button>
       </div>
 
-      {/* Kanban board placeholder — wired in later commit */}
+      {/* Kanban board placeholder — wired in next commit */}
       <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl border border-gray-200">
         <p className="text-gray-400 text-sm">Kanban board coming next...</p>
       </div>
+
+      {/* Add application modal */}
+      {showModal && <AddApplicationModal onClose={() => setShowModal(false)} onSave={handleSave} />}
     </div>
   );
 }
