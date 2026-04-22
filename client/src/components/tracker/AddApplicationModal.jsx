@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { importFromUrl } from '../../services/application.service.js';
 import toast from 'react-hot-toast';
 
 const AddApplicationModal = ({ onClose, onSave }) => {
@@ -11,10 +12,30 @@ const AddApplicationModal = ({ onClose, onSave }) => {
     notes: '',
     status: 'wishlist',
   });
+  const [importing, setImporting] = useState(false);
   const [saving, setSaving] = useState(false);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleImport = async () => {
+    if (!form.job_url.trim()) return toast.error('Enter a job URL first');
+    setImporting(true);
+    try {
+      const data = await importFromUrl(form.job_url.trim());
+      setForm((prev) => ({
+        ...prev,
+        company: data.company || prev.company,
+        role: data.title || prev.role,
+        location: data.location || prev.location,
+      }));
+      toast.success('Job details imported');
+    } catch {
+      toast.error('Could not import from URL');
+    } finally {
+      setImporting(false);
+    }
   };
 
   const handleSave = async () => {
@@ -46,18 +67,28 @@ const AddApplicationModal = ({ onClose, onSave }) => {
         </div>
 
         <div className="space-y-3">
-          {/* Job URL — importer added in next commit */}
+          {/* URL importer */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
-              Job URL <span className="text-gray-400 font-normal">(optional)</span>
+              Job URL{' '}
+              <span className="text-gray-400 font-normal">(optional — auto-fills fields)</span>
             </label>
-            <input
-              type="url"
-              value={form.job_url}
-              onChange={(e) => handleChange('job_url', e.target.value)}
-              placeholder="https://company.com/jobs/..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
-            />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={form.job_url}
+                onChange={(e) => handleChange('job_url', e.target.value)}
+                placeholder="https://company.com/jobs/..."
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
+              />
+              <button
+                onClick={handleImport}
+                disabled={importing}
+                className="px-3 py-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition disabled:opacity-50 whitespace-nowrap"
+              >
+                {importing ? 'Importing...' : 'Import'}
+              </button>
+            </div>
           </div>
 
           {/* Company & Role */}
