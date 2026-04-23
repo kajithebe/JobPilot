@@ -179,3 +179,100 @@ export const deleteInterview = async (req, res) => {
     client.release();
   }
 };
+
+// GET /api/interviews/:id/prep-topics
+export const getPrepTopics = async (req, res) => {
+  const user_id = req.user.id;
+  const {id} = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT * FROM interview_prep_topics
+       WHERE interview_id = $1 AND user_id = $2
+       ORDER BY created_at ASC`,
+      [id, user_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Get prep topics error:', err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+};
+
+// POST /api/interviews/:id/prep-topics
+export const createPrepTopic = async (req, res) => {
+  const user_id = req.user.id;
+  const {id} = req.params;
+  const {topic} = req.body;
+
+  if (!topic?.trim()) {
+    return res.status(400).json({error: 'Topic is required'});
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO interview_prep_topics (interview_id, user_id, topic)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [id, user_id, topic.trim()]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Create prep topic error:', err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+};
+
+// PATCH /api/interviews/:id/prep-topics/:topicId
+export const updatePrepTopic = async (req, res) => {
+  const user_id = req.user.id;
+  const {id, topicId} = req.params;
+  const {is_completed, topic} = req.body;
+
+  try {
+    const result = await pool.query(
+      `UPDATE interview_prep_topics
+       SET
+         topic        = COALESCE($1, topic),
+         is_completed = COALESCE($2, is_completed)
+       WHERE id = $3 AND interview_id = $4 AND user_id = $5
+       RETURNING *`,
+      [topic, is_completed, topicId, id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: 'Prep topic not found'});
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update prep topic error:', err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+};
+
+// DELETE /api/interviews/:id/prep-topics/:topicId
+export const deletePrepTopic = async (req, res) => {
+  const user_id = req.user.id;
+  const {id, topicId} = req.params;
+
+  try {
+    const result = await pool.query(
+      `DELETE FROM interview_prep_topics
+       WHERE id = $1 AND interview_id = $2 AND user_id = $3
+       RETURNING id`,
+      [topicId, id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: 'Prep topic not found'});
+    }
+
+    res.json({message: 'Prep topic deleted'});
+  } catch (err) {
+    console.error('Delete prep topic error:', err);
+    res.status(500).json({error: 'Internal server error'});
+  }
+};
