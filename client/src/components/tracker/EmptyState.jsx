@@ -1,11 +1,15 @@
 const EMPTY_STATE_CONFIG = {
-  wishlist:  { emoji: '🔖', message: 'No jobs saved yet',         sub: 'Add jobs you want to apply to'        },
-  applied:   { emoji: '📨', message: 'No applications yet',       sub: 'Move a job here when you apply'       },
-  interview: { emoji: '🎯', message: 'No interviews scheduled',   sub: 'Move here when you get an interview'  },
-  offer:     { emoji: '🎉', message: 'No offers yet',             sub: 'Keep going — you\'re doing great!'    },
-  rejected:  { emoji: '💪', message: 'No rejections',             sub: 'Every no gets you closer to a yes'    },
-  withdrawn: { emoji: '↩️', message: 'None withdrawn',            sub: 'Applications you\'ve pulled back'     },
-  default:   { emoji: '📋', message: 'Nothing here yet',          sub: 'Add your first item'                  },
+  wishlist: { emoji: '🔖', message: 'No jobs saved yet', sub: 'Add jobs you want to apply to' },
+  applied: { emoji: '📨', message: 'No applications yet', sub: 'Move a job here when you apply' },
+  interview: {
+    emoji: '🎯',
+    message: 'No interviews scheduled',
+    sub: 'Move here when you get an interview',
+  },
+  offer: { emoji: '🎉', message: 'No offers yet', sub: "Keep going — you're doing great!" },
+  rejected: { emoji: '💪', message: 'No rejections', sub: 'Every no gets you closer to a yes' },
+  withdrawn: { emoji: '↩️', message: 'None withdrawn', sub: "Applications you've pulled back" },
+  default: { emoji: '📋', message: 'Nothing here yet', sub: 'Add your first item' },
 };
 
 const EmptyState = ({ status, onAdd }) => {

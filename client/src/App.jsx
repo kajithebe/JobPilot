@@ -7,12 +7,12 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import JobTracker from './pages/JobTracker.jsx';
 import Interviews from './pages/Interviews.jsx';
 import ATSChecker from './pages/ATSChecker.jsx';
 import Settings from './pages/Settings.jsx';
 import ResumesPage from './pages/ResumesPage.jsx';
 import ResumeEditorPage from './pages/ResumeEditorPage.jsx';
+import ApplicationsPage from './pages/ApplicationsPage.jsx';
 
 const App = () => {
   return (
@@ -50,7 +50,7 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                <JobTracker />
+                <ApplicationsPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
