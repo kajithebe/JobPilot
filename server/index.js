@@ -8,6 +8,7 @@ import applicationRoutes from './routes/application.routes.js';
 import importerRoutes from './routes/importer.routes.js';
 import interviewRoutes from './routes/interview.routes.js';
 import {startInterviewCron} from './jobs/interviewCron.js';
+import {startEmailReminderCron} from './jobs/emailReminder.js';
 
 dotenv.config();
 
@@ -34,3 +35,4 @@ app.listen(PORT, () => {
 });
 
 startInterviewCron();
+startEmailReminderCron();
