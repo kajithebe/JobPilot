@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getResumeById, updateResume, createVersion } from '../services/resume.service.js';
+import {
+  getResumeById,
+  updateResume,
+  createVersion,
+  exportResumePDF,
+} from '../services/resume.service.js';
 import EditorPanel from '../components/resume/EditorPanel.jsx';
 import CVPreview from '../components/resume/CVPreview.jsx';
 import TemplateSwitcher from '../components/resume/TemplateSwitcher.jsx';
@@ -143,6 +148,16 @@ const ResumeEditorPage = () => {
             className="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
           >
             Save Version
+          </button>
+          <button
+            onClick={() => {
+              const date = new Date().toISOString().split('T')[0];
+              const safeName = resume.name.replace(/[^a-z0-9]/gi, '_');
+              exportResumePDF(id, `${safeName}_${date}.pdf`);
+            }}
+            className="px-3 py-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition"
+          >
+            ↓ Download PDF
           </button>
         </div>
       </div>
