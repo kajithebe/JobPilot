@@ -7,7 +7,7 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import Interviews from './pages/Interviews.jsx';
+import InterviewsPage from './pages/InterviewsPage.jsx';
 import ATSChecker from './pages/ATSChecker.jsx';
 import Settings from './pages/Settings.jsx';
 import ResumesPage from './pages/ResumesPage.jsx';
@@ -60,7 +60,7 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DashboardLayout>
-                <Interviews />
+                <InterviewsPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
