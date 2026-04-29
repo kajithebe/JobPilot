@@ -76,3 +76,22 @@ export const deleteVersion = async (resumeId, versionId) => {
   const response = await api.delete(`/resumes/${resumeId}/versions/${versionId}`);
   return response.data;
 };
+
+/**
+ * BACKEND: GET /api/resumes/:id/export/pdf
+ * Streams PDF file — handled as blob download
+ */
+export const exportResumePDF = async (id, filename) => {
+  const response = await api.get(`/resumes/${id}/export/pdf`, {
+    responseType: 'blob',
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename || 'resume.pdf');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
