@@ -20,150 +20,11 @@ import {
   deletePrepTopic,
 } from '../services/interview.service.js';
 import ScheduleInterviewModal from '../components/tracker/ScheduleInterviewModal.jsx';
+import InterviewCard from '../components/tracker/InterviewCard.jsx';
+import OutcomeBadge from '../components/tracker/OutcomeBadge.jsx';
+import PrepChecklist from '../components/tracker/PrepChecklist.jsx';
 import toast from 'react-hot-toast';
 
-// ── Interview type colours ────────────────────────────────────
-const TYPE_COLORS = {
-  online: 'bg-blue-50 text-blue-600',
-  'on-site': 'bg-purple-50 text-purple-600',
-  phone: 'bg-green-50 text-green-600',
-  technical: 'bg-orange-50 text-orange-600',
-  hr: 'bg-pink-50 text-pink-600',
-};
-
-// ── Interview Card ────────────────────────────────────────────
-const InterviewCard = ({ interview, onClick }) => {
-  const colorClass = TYPE_COLORS[interview.interview_type] || 'bg-gray-50 text-gray-600';
-  const date = new Date(interview.scheduled_at);
-  const now = new Date();
-  const diffDays = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
-
-  return (
-    <div
-      onClick={() => onClick(interview)}
-      className="bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-blue-300 hover:shadow-sm transition"
-    >
-      <div className="flex-1 min-w-0">
-        <h3 className="text-sm font-semibold text-gray-900 truncate">{interview.company || '—'}</h3>
-        <p className="text-xs text-gray-500 mt-0.5 truncate">{interview.role || '—'}</p>
-        <div className="flex flex-wrap gap-2 mt-2">
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${colorClass}`}>
-            {interview.interview_type}
-          </span>
-          {interview.location && (
-            <span className="text-xs text-gray-400">📍 {interview.location}</span>
-          )}
-        </div>
-        <p className="text-xs text-gray-400 mt-2">
-          📅{' '}
-          {date.toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-          })}{' '}
-          at{' '}
-          {date.toLocaleTimeString('en-GB', {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-        </p>
-        {diffDays > 0 && (
-          <p className="text-xs text-blue-500 mt-1 font-medium">
-            {diffDays === 1 ? 'Tomorrow!' : `In ${diffDays} days`}
-          </p>
-        )}
-        {diffDays === 0 && <p className="text-xs text-green-500 mt-1 font-medium">Today!</p>}
-        {diffDays < 0 && <p className="text-xs text-gray-300 mt-1">Past</p>}
-      </div>
-    </div>
-  );
-};
-
-// ── Prep Checklist ────────────────────────────────────────────
-const PrepChecklist = ({ topics, onAdd, onToggle, onDelete }) => {
-  const [input, setInput] = useState('');
-
-  const handleAdd = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    onAdd(trimmed);
-    setInput('');
-  };
-
-  const completed = topics.filter((t) => t.is_completed).length;
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900">Prep Checklist</h3>
-        {topics.length > 0 && (
-          <span className="text-xs text-gray-400">
-            {completed}/{topics.length} done
-          </span>
-        )}
-      </div>
-
-      {/* Add topic input */}
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-          placeholder="Add a prep topic..."
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 placeholder-gray-300"
-        />
-        <button
-          onClick={handleAdd}
-          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition border-none cursor-pointer"
-        >
-          Add
-        </button>
-      </div>
-
-      {/* Topic list */}
-      {topics.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-6">
-          No prep topics yet — add something to study!
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {topics.map((topic) => (
-            <div
-              key={topic.id}
-              className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 group transition"
-            >
-              {/* Checkbox */}
-              <input
-                type="checkbox"
-                checked={topic.is_completed}
-                onChange={() => onToggle(topic.id, !topic.is_completed)}
-                className="w-4 h-4 accent-blue-600 cursor-pointer flex-shrink-0"
-              />
-              {/* Topic text */}
-              <span
-                className={`flex-1 text-sm ${
-                  topic.is_completed ? 'line-through text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                {topic.topic}
-              </span>
-              {/* Delete button */}
-              <button
-                onClick={() => onDelete(topic.id)}
-                className="text-gray-300 hover:text-red-400 transition opacity-0 group-hover:opacity-100 text-lg leading-none border-none bg-transparent cursor-pointer"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
-// ── Main Page ─────────────────────────────────────────────────
 const InterviewsPage = () => {
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -188,7 +49,6 @@ const InterviewsPage = () => {
   }, []);
 
   // BACKEND: GET /api/interviews/:id/prep-topics
-  // Loads when a different interview is selected
   useEffect(() => {
     if (!selectedInterview) return;
     const fetchTopics = async () => {
@@ -306,6 +166,7 @@ const InterviewsPage = () => {
                     selectedInterview?.id === interview.id ? 'ring-2 ring-blue-500' : ''
                   }`}
                 >
+                  {/* Using Sani's InterviewCard component */}
                   <InterviewCard interview={interview} onClick={handleInterviewClick} />
                 </div>
                 <button
@@ -324,9 +185,15 @@ const InterviewsPage = () => {
               <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                 {/* Interview detail header */}
                 <div className="mb-6">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    {selectedInterview.company || '—'}
-                  </h2>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {selectedInterview.company || '—'}
+                    </h2>
+                    {/* Using Sani's OutcomeBadge component */}
+                    {selectedInterview.outcome && (
+                      <OutcomeBadge outcome={selectedInterview.outcome} />
+                    )}
+                  </div>
                   <p className="text-gray-500 text-sm">{selectedInterview.role || '—'}</p>
                   <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-400">
                     <span>
@@ -354,7 +221,7 @@ const InterviewsPage = () => {
 
                 <hr className="border-gray-100 mb-6" />
 
-                {/* Prep checklist */}
+                {/* Using Sani's PrepChecklist component */}
                 {topicsLoading ? (
                   <p className="text-gray-400 text-sm text-center py-4">Loading topics...</p>
                 ) : (
