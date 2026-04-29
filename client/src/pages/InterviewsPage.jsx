@@ -1,3 +1,15 @@
+/**
+ * INTERVIEWS PAGE
+ * ─────────────────────────────────────────────────────────────
+ * BACKEND: GET /api/interviews
+ * BACKEND: DELETE /api/interviews/:id
+ * BACKEND: GET /api/interviews/:id/prep-topics
+ * BACKEND: POST /api/interviews/:id/prep-topics — { topic: string }
+ * BACKEND: PATCH /api/interviews/:id/prep-topics/:topicId — { is_completed: bool }
+ * BACKEND: DELETE /api/interviews/:id/prep-topics/:topicId
+ * ─────────────────────────────────────────────────────────────
+ */
+
 import { useState, useEffect } from 'react';
 import {
   getInterviews,

@@ -1,26 +1,6 @@
-/**
- * SCHEDULE INTERVIEW MODAL
- * ─────────────────────────────────────────────────────────────
- * BACKEND: POST /api/interviews
- * Request:
- * {
- *   application_id: number,
- *   interview_type: string,  ← online | on-site | phone | technical | hr
- *   scheduled_at: string,    ← ISO datetime string
- *   location: string,
- *   notes: string
- * }
- *
- * Expected success response (201):
- * {
- *   success: true,
- *   data: { id, application_id, interview_type, scheduled_at, location, notes }
- * }
- * ─────────────────────────────────────────────────────────────
- */
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createInterview } from '../../services/interview.service.js';
+import { getApplications } from '../../services/application.service.js';
 import toast from 'react-hot-toast';
 
 const INTERVIEW_TYPES = [
@@ -38,19 +18,31 @@ const ScheduleInterviewModal = ({ applicationId, company, role, onClose, onSave 
     location: '',
     notes: '',
   });
+  const [selectedApplicationId, setSelectedApplicationId] = useState(applicationId || '');
+  const [applications, setApplications] = useState([]);
   const [saving, setSaving] = useState(false);
+
+  // If applicationId is not passed, fetch applications for selector
+  useEffect(() => {
+    if (!applicationId) {
+      getApplications()
+        .then((data) => setApplications(data || []))
+        .catch(() => toast.error('Failed to load applications'));
+    }
+  }, [applicationId]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
+    if (!selectedApplicationId) return toast.error('Please select an application');
     if (!form.scheduled_at) return toast.error('Please select a date and time');
 
     setSaving(true);
     try {
       const interview = await createInterview({
-        application_id: applicationId,
+        application_id: parseInt(selectedApplicationId),
         ...form,
       });
       toast.success('Interview scheduled!');
@@ -63,6 +55,9 @@ const ScheduleInterviewModal = ({ applicationId, company, role, onClose, onSave 
     }
   };
 
+  // Find selected application label
+  const selectedApp = applications.find((a) => a.id === parseInt(selectedApplicationId));
+
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
       <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-md shadow-lg">
@@ -70,9 +65,14 @@ const ScheduleInterviewModal = ({ applicationId, company, role, onClose, onSave 
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-gray-900 font-semibold">Schedule Interview</h3>
-            {company && role && (
+            {applicationId && company && role && (
               <p className="text-xs text-gray-400 mt-0.5">
                 {company} — {role}
+              </p>
+            )}
+            {!applicationId && selectedApp && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                {selectedApp.company} — {selectedApp.role}
               </p>
             )}
           </div>
@@ -85,6 +85,29 @@ const ScheduleInterviewModal = ({ applicationId, company, role, onClose, onSave 
         </div>
 
         <div className="space-y-3">
+          {/* Application selector — only shown when applicationId not passed */}
+          {!applicationId && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Application <span className="text-red-400">*</span>
+              </label>
+              <select
+                value={selectedApplicationId}
+                onChange={(e) => setSelectedApplicationId(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+              >
+                <option value="">Select an application...</option>
+                {applications
+                  .filter((a) => !['rejected', 'withdrawn', 'offer'].includes(a.status))
+                  .map((app) => (
+                    <option key={app.id} value={app.id}>
+                      {app.company} — {app.role}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+
           {/* Interview type */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Interview Type</label>
