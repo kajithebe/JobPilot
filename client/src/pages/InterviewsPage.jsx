@@ -1,15 +1,3 @@
-/**
- * INTERVIEWS PAGE
- * ─────────────────────────────────────────────────────────────
- * BACKEND: GET /api/interviews
- * BACKEND: DELETE /api/interviews/:id
- * BACKEND: GET /api/interviews/:id/prep-topics
- * BACKEND: POST /api/interviews/:id/prep-topics — { topic: string }
- * BACKEND: PATCH /api/interviews/:id/prep-topics/:topicId — { is_completed: bool }
- * BACKEND: DELETE /api/interviews/:id/prep-topics/:topicId
- * ─────────────────────────────────────────────────────────────
- */
-
 import { useState, useEffect } from 'react';
 import {
   getInterviews,
@@ -37,8 +25,8 @@ const InterviewsPage = () => {
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        const res = await getInterviews();
-        setInterviews(res.data || []);
+        const data = await getInterviews();
+        setInterviews(data || []);
       } catch {
         toast.error('Failed to load interviews');
       } finally {
@@ -54,8 +42,8 @@ const InterviewsPage = () => {
     const fetchTopics = async () => {
       setTopicsLoading(true);
       try {
-        const res = await getPrepTopics(selectedInterview.id);
-        setTopics(res.data || []);
+        const data = await getPrepTopics(selectedInterview.id);
+        setTopics(data || []);
       } catch {
         toast.error('Failed to load prep topics');
       } finally {
@@ -87,8 +75,8 @@ const InterviewsPage = () => {
   // BACKEND: POST /api/interviews/:id/prep-topics
   const handleAddTopic = async (topic) => {
     try {
-      const res = await createPrepTopic(selectedInterview.id, topic);
-      setTopics((prev) => [...prev, res.data]);
+      const data = await createPrepTopic(selectedInterview.id, topic);
+      setTopics((prev) => [...prev, data]);
     } catch {
       toast.error('Failed to add topic');
     }
@@ -97,8 +85,8 @@ const InterviewsPage = () => {
   // BACKEND: PATCH /api/interviews/:id/prep-topics/:topicId
   const handleToggleTopic = async (topicId, is_completed) => {
     try {
-      const res = await updatePrepTopic(selectedInterview.id, topicId, { is_completed });
-      setTopics((prev) => prev.map((t) => (t.id === topicId ? res.data : t)));
+      const data = await updatePrepTopic(selectedInterview.id, topicId, { is_completed });
+      setTopics((prev) => prev.map((t) => (t.id === topicId ? data : t)));
     } catch {
       toast.error('Failed to update topic');
     }
@@ -166,7 +154,6 @@ const InterviewsPage = () => {
                     selectedInterview?.id === interview.id ? 'ring-2 ring-blue-500' : ''
                   }`}
                 >
-                  {/* Using Sani's InterviewCard component */}
                   <InterviewCard interview={interview} onClick={handleInterviewClick} />
                 </div>
                 <button
@@ -189,7 +176,6 @@ const InterviewsPage = () => {
                     <h2 className="text-lg font-semibold text-gray-900">
                       {selectedInterview.company || '—'}
                     </h2>
-                    {/* Using Sani's OutcomeBadge component */}
                     {selectedInterview.outcome && (
                       <OutcomeBadge outcome={selectedInterview.outcome} />
                     )}
@@ -221,7 +207,7 @@ const InterviewsPage = () => {
 
                 <hr className="border-gray-100 mb-6" />
 
-                {/* Using Sani's PrepChecklist component */}
+                {/* Prep checklist */}
                 {topicsLoading ? (
                   <p className="text-gray-400 text-sm text-center py-4">Loading topics...</p>
                 ) : (

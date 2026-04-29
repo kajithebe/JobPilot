@@ -54,7 +54,7 @@ const ScheduleInterviewModal = ({ applicationId, company, role, onClose, onSave 
         ...form,
       });
       toast.success('Interview scheduled!');
-      onSave(interview.data);
+      onSave(interview);
       onClose();
     } catch {
       toast.error('Failed to schedule interview');
