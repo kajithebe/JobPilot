@@ -21,7 +21,7 @@ import toast from 'react-hot-toast';
 
 // ── Check-in flow wrapper ─────────────────────────────────────────────
 const CheckInFlow = () => {
-  const { token } = useAuth();
+  const token = localStorage.getItem('token');
   const [pendingCheckIns, setPendingCheckIns] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
