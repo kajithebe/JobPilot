@@ -7,13 +7,15 @@ import {
 import KanbanBoard from '../components/tracker/KanbanBoard.jsx';
 import AddApplicationModal from '../components/tracker/AddApplicationModal.jsx';
 import AddApplicationButton from '../components/tracker/AddApplicationButton.jsx';
+import ApplicationDetailModal from '../components/tracker/ApplicationDetailModal.jsx';
 import toast from 'react-hot-toast';
 
 const ApplicationsPage = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [view, setView] = useState('kanban'); // 'kanban' | 'list'
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [view, setView] = useState('kanban');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -53,8 +55,11 @@ const ApplicationsPage = () => {
   };
 
   const handleApplicationClick = (application) => {
-    // Detail modal — handled in future card
-    console.log('Application clicked:', application);
+    setSelectedApplication(application);
+  };
+
+  const handleUpdate = (updated) => {
+    setApplications((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
   };
 
   const filteredApplications = applications.filter((app) => {
@@ -85,7 +90,6 @@ const ApplicationsPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* View toggle */}
           <div className="flex border border-gray-200 rounded-lg overflow-hidden">
             <button
               onClick={() => setView('kanban')}
@@ -108,7 +112,6 @@ const ApplicationsPage = () => {
               List
             </button>
           </div>
-
           <button
             onClick={() => setShowModal(true)}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
@@ -167,6 +170,16 @@ const ApplicationsPage = () => {
       {/* Add application modal */}
       {showModal && (
         <AddApplicationModal onClose={() => setShowModal(false)} onSave={handleCreate} />
+      )}
+
+      {/* Application detail modal */}
+      {selectedApplication && (
+        <ApplicationDetailModal
+          application={selectedApplication}
+          onClose={() => setSelectedApplication(null)}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   );
