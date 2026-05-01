@@ -15,6 +15,7 @@ export const getActivities = async (page = 1, limit = 10) => {
   const response = await api.get('/dashboard/activities', {
     params: { limit, offset },
   });
+
   const transformed = (response.data || []).map((activity) => ({
     id: activity.id,
     action: formatAction(activity.action, activity.entity_type),
@@ -22,6 +23,7 @@ export const getActivities = async (page = 1, limit = 10) => {
     entity_link: getEntityLink(activity.entity_type),
     created_at: activity.created_at,
   }));
+
   return {
     data: transformed,
     pagination: null,
