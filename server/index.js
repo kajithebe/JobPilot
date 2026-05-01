@@ -10,6 +10,7 @@ import interviewRoutes from './routes/interview.routes.js';
 import {startInterviewCron} from './jobs/interviewCron.js';
 import {startEmailReminderCron} from './jobs/emailReminder.js';
 import pdfRoutes from './routes/pdf.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/applications', applicationRoutes);
 app.use('/api/import', importerRoutes);
 app.use('/api/interviews', interviewRoutes);
 app.use('/api/resumes', pdfRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({status: 'ok', message: 'JobPilot API is running'});
