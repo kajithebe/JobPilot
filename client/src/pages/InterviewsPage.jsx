@@ -49,12 +49,13 @@ const InterviewsPage = () => {
   }, []);
 
   // BACKEND: GET /api/interviews/:id/prep-topics
+  const selectedInterviewId = selectedInterview?.id;
   useEffect(() => {
-    if (!selectedInterview) return;
+    if (!selectedInterviewId) return;
     const fetchTopics = async () => {
       setTopicsLoading(true);
       try {
-        const data = await getPrepTopics(selectedInterview.id);
+        const data = await getPrepTopics(selectedInterviewId);
         setTopics(data || []);
       } catch {
         toast.error('Failed to load prep topics');
@@ -63,7 +64,7 @@ const InterviewsPage = () => {
       }
     };
     fetchTopics();
-  }, [selectedInterview?.id]);
+  }, [selectedInterviewId]);
 
   const handleInterviewClick = (interview) => {
     setSelectedInterview(interview);
