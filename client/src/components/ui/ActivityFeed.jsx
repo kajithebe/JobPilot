@@ -1,20 +1,21 @@
-/**
- * ACTIVITY FEED COMPONENT
- * ─────────────────────────────────────────────────────────────
- * BACKEND: Data comes from GET /api/activities
- * Shows paginated list of recent user actions.
- *
- * Each activity: {
- *   id: number,
- *   action: string,      ← e.g. "Applied to", "Interview scheduled at"
- *   entity: string,      ← e.g. company name
- *   entity_link: string, ← e.g. /job-tracker
- *   created_at: string
- * }
- * ─────────────────────────────────────────────────────────────
- */
-
 import { Link } from 'react-router-dom';
+
+const ACTION_ICONS = {
+  applied: '📨',
+  interview: '🎯',
+  offer: '🎉',
+  rejected: '💪',
+  withdrawn: '↩️',
+  created: '✨',
+  updated: '✏️',
+  deleted: '🗑️',
+  default: '📋',
+};
+
+const getIcon = (action) => {
+  const key = Object.keys(ACTION_ICONS).find((k) => action?.toLowerCase().includes(k));
+  return ACTION_ICONS[key] || ACTION_ICONS.default;
+};
 
 const formatTime = (dateStr) => {
   const date = new Date(dateStr);
@@ -60,8 +61,10 @@ const ActivityFeed = ({ activities, loading, onLoadMore, hasMore }) => {
       <div className="space-y-4">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start gap-3">
-            {/* Dot indicator */}
-            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-400 mt-2" />
+            {/* Icon */}
+            <div className="flex-shrink-0 w-8 h-8 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-center">
+              <span className="text-sm">{getIcon(activity.action)}</span>
+            </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
@@ -84,7 +87,6 @@ const ActivityFeed = ({ activities, loading, onLoadMore, hasMore }) => {
         ))}
       </div>
 
-      {/* Load more button */}
       {hasMore && (
         <button
           onClick={onLoadMore}
