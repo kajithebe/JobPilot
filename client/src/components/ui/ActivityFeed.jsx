@@ -1,22 +1,5 @@
 import { Link } from 'react-router-dom';
 
-const ACTION_ICONS = {
-  applied: '📨',
-  interview: '🎯',
-  offer: '🎉',
-  rejected: '💪',
-  withdrawn: '↩️',
-  created: '✨',
-  updated: '✏️',
-  deleted: '🗑️',
-  default: '📋',
-};
-
-const getIcon = (action) => {
-  const key = Object.keys(ACTION_ICONS).find((k) => action?.toLowerCase().includes(k));
-  return ACTION_ICONS[key] || ACTION_ICONS.default;
-};
-
 const formatTime = (dateStr) => {
   const date = new Date(dateStr);
   const now = new Date();
@@ -61,10 +44,8 @@ const ActivityFeed = ({ activities, loading, onLoadMore, hasMore }) => {
       <div className="space-y-4">
         {activities.map((activity) => (
           <div key={activity.id} className="flex items-start gap-3">
-            {/* Icon */}
-            <div className="flex-shrink-0 w-8 h-8 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-center">
-              <span className="text-sm">{getIcon(activity.action)}</span>
-            </div>
+            {/* Dot indicator */}
+            <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-400 mt-2" />
 
             {/* Content */}
             <div className="flex-1 min-w-0">
