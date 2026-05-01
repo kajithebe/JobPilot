@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { updateApplication, deleteApplication } from '../../services/application.service.js';
-import { getVersions } from '../../services/resume.service.js';
+import { getInterviews } from '../../services/interview.service.js';
 import api from '../../services/api.js';
 import { StatusBadge } from './ApplicationCard.jsx';
 import toast from 'react-hot-toast';
 
 const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) => {
   const [notes, setNotes] = useState(application.notes || '');
-  const [versions, setVersions] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,30 +19,17 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
 
   const fetchDetails = async () => {
     try {
-      const [interviewsRes, activitiesRes] = await Promise.all([
-        api.get('/interviews'),
+      const [interviewsData, activitiesRes] = await Promise.all([
+        getInterviews(),
         api.get('/dashboard/activities'),
       ]);
 
-      const appInterviews = (interviewsRes.data || []).filter(
-        (i) => i.application_id === application.id
+      setInterviews((interviewsData || []).filter((i) => i.application_id === application.id));
+      setActivities(
+        (activitiesRes.data || []).filter(
+          (a) => a.entity_type === 'application' && a.entity_id === application.id
+        )
       );
-      const appActivities = (activitiesRes.data || []).filter(
-        (a) => a.entity_type === 'application' && a.entity_id === application.id
-      );
-
-      setInterviews(appInterviews);
-      setActivities(appActivities);
-
-      // Fetch resume versions if linked
-      if (application.resume_version_id) {
-        const resumeResult = await api.get(`/resumes`);
-        const resumes = resumeResult.data || [];
-        if (resumes.length > 0) {
-          const versionsData = await getVersions(resumes[0].id);
-          setVersions(versionsData || []);
-        }
-      }
     } catch {
       toast.error('Failed to load application details');
     } finally {
@@ -75,8 +61,6 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
     }
   };
 
-  const linkedVersion = versions.find((v) => v.id === application.resume_version_id);
-
   return (
     <div className="fixed inset-0 bg-black/30 flex items-start justify-end z-50">
       <div className="bg-white h-full w-full max-w-lg shadow-xl flex flex-col overflow-hidden">
@@ -87,12 +71,6 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
             <p className="text-gray-500 text-sm mt-0.5">{application.role}</p>
             <div className="flex items-center gap-2 mt-2">
               <StatusBadge status={application.status} />
-              {application.location && (
-                <span className="text-xs text-gray-400">📍 {application.location}</span>
-              )}
-              {application.salary && (
-                <span className="text-xs text-gray-400">💰 {application.salary}</span>
-              )}
             </div>
           </div>
           <button
@@ -106,32 +84,34 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
           {/* Metadata */}
-          <div className="grid grid-cols-2 gap-3">
-            {application.job_url && (
-              <a
-                href={application.job_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-blue-600 hover:underline truncate col-span-2"
-              >
-                🔗 {application.job_url}
-              </a>
+          <div className="grid grid-cols-2 gap-4">
+            {application.location && (
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Location</p>
+                <p className="text-sm text-gray-700">{application.location}</p>
+              </div>
+            )}
+            {application.salary && (
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Salary</p>
+                <p className="text-sm text-gray-700">{application.salary}</p>
+              </div>
+            )}
+            {application.applied_at && (
+              <div>
+                <p className="text-xs text-gray-400 mb-1">Applied</p>
+                <p className="text-sm text-gray-700">
+                  {new Date(application.applied_at).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </p>
+              </div>
             )}
             <div>
-              <p className="text-xs text-gray-400">Applied</p>
-              <p className="text-xs text-gray-700 font-medium mt-0.5">
-                {application.applied_at
-                  ? new Date(application.applied_at).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric',
-                    })
-                  : '—'}
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-400">Last updated</p>
-              <p className="text-xs text-gray-700 font-medium mt-0.5">
+              <p className="text-xs text-gray-400 mb-1">Last updated</p>
+              <p className="text-sm text-gray-700">
                 {new Date(application.updated_at).toLocaleDateString('en-GB', {
                   day: 'numeric',
                   month: 'short',
@@ -139,23 +119,28 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
                 })}
               </p>
             </div>
+            {application.job_url && (
+              <div className="col-span-2">
+                <p className="text-xs text-gray-400 mb-1">Job URL</p>
+                <a
+                  href={application.job_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-blue-600 hover:underline truncate block"
+                >
+                  View posting
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Linked resume version */}
-          {linkedVersion && (
+          {application.resume_version_name && (
             <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                Linked Resume Version
-              </p>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-                <p className="text-sm font-medium text-gray-900">{linkedVersion.version_name}</p>
-                <p className="text-xs text-gray-400 mt-0.5 capitalize">
-                  {linkedVersion.template} template ·{' '}
-                  {new Date(linkedVersion.created_at).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
+              <p className="text-xs text-gray-400 mb-1">Linked Resume Version</p>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                <p className="text-sm text-blue-700 font-medium">
+                  {application.resume_version_name}
                 </p>
               </div>
             </div>
@@ -171,34 +156,35 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
                 {interviews.map((interview) => (
                   <div
                     key={interview.id}
-                    className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2"
+                    className="flex items-center justify-between bg-gray-50 border border-gray-100 rounded-lg px-3 py-2"
                   >
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-medium text-gray-700 capitalize">
+                    <div>
+                      <p className="text-sm text-gray-700 font-medium capitalize">
                         {interview.interview_type} interview
                       </p>
-                      {interview.outcome && (
-                        <span
-                          className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                            interview.outcome === 'offer'
-                              ? 'bg-green-50 text-green-700'
-                              : interview.outcome === 'rejected'
-                                ? 'bg-red-50 text-red-700'
-                                : 'bg-amber-50 text-amber-700'
-                          }`}
-                        >
-                          {interview.outcome}
-                        </span>
-                      )}
+                      <p className="text-xs text-gray-400">
+                        {new Date(interview.scheduled_at).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {new Date(interview.scheduled_at).toLocaleDateString('en-GB', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </p>
+                    {interview.outcome && (
+                      <span
+                        className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
+                          interview.outcome === 'offer'
+                            ? 'bg-green-50 text-green-600'
+                            : interview.outcome === 'rejected'
+                              ? 'bg-red-50 text-red-600'
+                              : 'bg-amber-50 text-amber-600'
+                        }`}
+                      >
+                        {interview.outcome}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
