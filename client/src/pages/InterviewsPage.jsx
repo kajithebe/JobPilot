@@ -194,8 +194,8 @@ const InterviewsPage = () => {
                   </div>
                   <p className="text-gray-500 text-sm">{selectedInterview.role || '—'}</p>
                   <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-400">
-                    <span>
-                      📅{' '}
+                    <span className="inline-flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                       {new Date(selectedInterview.scheduled_at).toLocaleDateString('en-GB', {
                         weekday: 'long',
                         day: 'numeric',
@@ -203,14 +203,19 @@ const InterviewsPage = () => {
                         year: 'numeric',
                       })}
                     </span>
-                    <span>
-                      🕐{' '}
+                    <span className="inline-flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                       {new Date(selectedInterview.scheduled_at).toLocaleTimeString('en-GB', {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
                     </span>
-                    {selectedInterview.location && <span>📍 {selectedInterview.location}</span>}
+                    {selectedInterview.location && (
+                      <span className="inline-flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        {selectedInterview.location}
+                      </span>
+                    )}
                   </div>
                   {selectedInterview.notes && (
                     <p className="text-xs text-gray-400 mt-2 italic">{selectedInterview.notes}</p>

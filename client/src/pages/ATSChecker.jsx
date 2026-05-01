@@ -289,7 +289,7 @@ export default function ATSChecker() {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 text-center py-4">
-                    🎉 No missing keywords — great match!
+                    No missing keywords — great match!
                   </p>
                 )}
               </div>
