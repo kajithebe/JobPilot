@@ -1,19 +1,3 @@
-/**
- * ACTIVITY FEED COMPONENT
- * ─────────────────────────────────────────────────────────────
- * BACKEND: Data comes from GET /api/activities
- * Shows paginated list of recent user actions.
- *
- * Each activity: {
- *   id: number,
- *   action: string,      ← e.g. "Applied to", "Interview scheduled at"
- *   entity: string,      ← e.g. company name
- *   entity_link: string, ← e.g. /job-tracker
- *   created_at: string
- * }
- * ─────────────────────────────────────────────────────────────
- */
-
 import { Link } from 'react-router-dom';
 
 const formatTime = (dateStr) => {
@@ -84,7 +68,6 @@ const ActivityFeed = ({ activities, loading, onLoadMore, hasMore }) => {
         ))}
       </div>
 
-      {/* Load more button */}
       {hasMore && (
         <button
           onClick={onLoadMore}
