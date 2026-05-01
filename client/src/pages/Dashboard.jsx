@@ -70,8 +70,8 @@ export default function Dashboard() {
           getDashboardStats(),
           getDashboardAlerts(),
         ]);
-        setStats(statsRes.data);
-        setAlerts(alertsRes.data || []);
+        setStats(statsRes);
+        setAlerts(alertsRes || []);
       } catch {
         toast.error('Failed to load dashboard data');
       } finally {
