@@ -23,6 +23,7 @@ import ScheduleInterviewModal from '../components/tracker/ScheduleInterviewModal
 import InterviewCard from '../components/tracker/InterviewCard.jsx';
 import OutcomeBadge from '../components/tracker/OutcomeBadge.jsx';
 import PrepChecklist from '../components/tracker/PrepChecklist.jsx';
+import { InterviewListSkeleton } from '../components/ui/Skeleton.jsx';
 import toast from 'react-hot-toast';
 
 const InterviewsPage = () => {
@@ -122,8 +123,13 @@ const InterviewsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-400 text-sm">Loading interviews...</p>
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Interviews</h1>
+          </div>
+        </div>
+        <InterviewListSkeleton />
       </div>
     );
   }
