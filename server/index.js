@@ -11,13 +11,32 @@ import {startInterviewCron} from './jobs/interviewCron.js';
 import {startEmailReminderCron} from './jobs/emailReminder.js';
 import pdfRoutes from './routes/pdf.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import rateLimit from 'express-rate-limit';
+import {sanitizeBody} from './middleware/sanitize.middleware.js';
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(sanitizeBody);
+
+// Rate limiting — auth endpoints only
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  message: {error: 'Too many requests, please try again later'},
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/auth', authLimiter);
 
 // Routes
 app.use('/api/auth', authRoutes);
