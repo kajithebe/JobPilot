@@ -8,6 +8,7 @@ import KanbanBoard from '../components/tracker/KanbanBoard.jsx';
 import AddApplicationModal from '../components/tracker/AddApplicationModal.jsx';
 import AddApplicationButton from '../components/tracker/AddApplicationButton.jsx';
 import ApplicationDetailModal from '../components/tracker/ApplicationDetailModal.jsx';
+import { KanbanSkeleton } from '../components/ui/Skeleton.jsx';
 import toast from 'react-hot-toast';
 
 const ApplicationsPage = () => {
@@ -73,8 +74,13 @@ const ApplicationsPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-400 text-sm">Loading applications...</p>
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Job Tracker</h1>
+          </div>
+        </div>
+        <KanbanSkeleton />
       </div>
     );
   }
