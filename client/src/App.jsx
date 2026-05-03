@@ -1,5 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
+import { Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import ProtectedRoute from './components/ui/ProtectedRoute.jsx';
 import DashboardLayout from './components/layout/DashboardLayout.jsx';
@@ -18,6 +17,7 @@ import CheckInModal from './components/tracker/CheckInModal.jsx';
 import { getPendingCheckIns, checkInInterview } from './services/interview.service.js';
 import { useAuth } from './hooks/useAuth.js';
 import toast from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 
 // ── Check-in flow wrapper ─────────────────────────────────────────────
 const CheckInFlow = () => {
@@ -68,7 +68,7 @@ const CheckInFlow = () => {
 // ── App ───────────────────────────────────────────────────────────────
 const App = () => {
   return (
-    <BrowserRouter>
+    <>
       <Toaster position="top-right" />
       <CheckInFlow />
       <Routes>
@@ -152,7 +152,7 @@ const App = () => {
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 };
 
