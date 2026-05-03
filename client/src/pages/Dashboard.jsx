@@ -1,13 +1,3 @@
-/**
- * DASHBOARD PAGE
- * ─────────────────────────────────────────────────────────────
- * BACKEND: GET /api/dashboard/stats
- * BACKEND: GET /api/dashboard/alerts
- * BACKEND: GET /api/activities?page=1&limit=10
- * BACKEND: GET /api/dashboard/charts?range=30|60|90
- * ─────────────────────────────────────────────────────────────
- */
-
 import { useState, useEffect } from 'react';
 import {
   getDashboardStats,
@@ -21,6 +11,7 @@ import ActivityFeed from '../components/ui/ActivityFeed.jsx';
 import ApplicationsLineChart from '../components/ui/ApplicationsLineChart.jsx';
 import PipelineBarChart from '../components/ui/PipelineBarChart.jsx';
 import OutcomesPieChart from '../components/ui/OutcomesPieChart.jsx';
+import { StatsSkeleton } from '../components/ui/Skeleton.jsx';
 import toast from 'react-hot-toast';
 
 const STATS_CONFIG = [
@@ -48,10 +39,8 @@ export default function Dashboard() {
   const [activitiesLoading, setActivitiesLoading] = useState(true);
   const [chartsLoading, setChartsLoading] = useState(true);
 
-  // Get user name from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // BACKEND: GET /api/dashboard/stats and GET /api/dashboard/alerts
   useEffect(() => {
     const fetchStatsAndAlerts = async () => {
       try {
@@ -70,7 +59,6 @@ export default function Dashboard() {
     fetchStatsAndAlerts();
   }, []);
 
-  // BACKEND: GET /api/activities?page=1&limit=10
   useEffect(() => {
     const fetchActivities = async () => {
       try {
@@ -87,8 +75,6 @@ export default function Dashboard() {
     fetchActivities();
   }, []);
 
-  // BACKEND: GET /api/dashboard/charts?range=30|60|90
-  // Refetches whenever range changes
   useEffect(() => {
     const fetchCharts = async () => {
       try {
@@ -104,7 +90,6 @@ export default function Dashboard() {
     fetchCharts();
   }, [range]);
 
-  // Load more activities — pagination
   const handleLoadMore = async () => {
     try {
       setActivitiesLoading(true);
@@ -134,17 +119,21 @@ export default function Dashboard() {
       <AlertBanner alerts={alerts} />
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {STATS_CONFIG.map((config) => (
-          <StatsCard
-            key={config.key}
-            label={config.label}
-            value={statsLoading ? '...' : (stats?.[config.key] ?? 0)}
-            color={config.color}
-            bg={config.bg}
-          />
-        ))}
-      </div>
+      {statsLoading ? (
+        <StatsSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {STATS_CONFIG.map((config) => (
+            <StatsCard
+              key={config.key}
+              label={config.label}
+              value={stats?.[config.key] ?? 0}
+              color={config.color}
+              bg={config.bg}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Date range filter */}
       <div className="flex items-center justify-between mb-4">

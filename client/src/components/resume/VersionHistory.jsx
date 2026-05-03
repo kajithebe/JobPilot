@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getVersions, deleteVersion } from '../../services/resume.service.js';
+import { VersionListSkeleton } from '../ui/Skeleton.jsx';
 import toast from 'react-hot-toast';
 
 const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
@@ -87,7 +88,7 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
         {/* Version list */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {loading ? (
-            <p className="text-gray-400 text-sm text-center py-8">Loading...</p>
+            <VersionListSkeleton />
           ) : versions.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-400 text-sm">No versions saved yet</p>
@@ -164,7 +165,7 @@ const VersionHistory = ({ resumeId, currentResume, onRestore, onClose }) => {
         </div>
       </div>
 
-      {/* Inline confirmation modal — replaces browser confirm() */}
+      {/* Inline confirmation modal */}
       {confirmAction && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-60">
           <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm shadow-lg mx-4">
