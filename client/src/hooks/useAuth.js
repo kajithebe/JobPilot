@@ -32,12 +32,13 @@ export const useAuth = () => {
       // BACKEND: response must include data.token and data.user
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      toast.success('Welcome back!');
+      toast.success('Welcome back!', { duration: 3000 });
       navigate('/dashboard');
-    } catch (err) {
       // BACKEND: 401 for wrong credentials, 400 for missing fields
+    } catch (err) {
       const message = err.response?.data?.error || 'Login failed';
-      toast.error(message);
+      toast.error(message, { duration: 4000 });
+      throw err;
     } finally {
       setLoading(false);
     }
