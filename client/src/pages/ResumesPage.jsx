@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getResumes, createResume, deleteResume } from '../services/resume.service.js';
+import { ResumeListSkeleton } from '../components/ui/Skeleton.jsx';
 import toast from 'react-hot-toast';
 
 const defaultContent = {
@@ -83,8 +84,13 @@ const ResumesPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-gray-400">Loading resumes...</p>
+      <div className="min-h-screen bg-gray-50">
+        <nav className="w-full px-6 py-4 flex items-center justify-between border-b border-gray-100 bg-white">
+          <span className="text-xl font-bold text-blue-600">JobPilot</span>
+        </nav>
+        <div className="max-w-5xl mx-auto px-6 py-10">
+          <ResumeListSkeleton />
+        </div>
       </div>
     );
   }
