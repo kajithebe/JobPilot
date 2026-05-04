@@ -20,7 +20,6 @@ export const register = async (req, res) => {
   }
 
   const normalizedEmail = email.trim().toLowerCase();
-  console.log('Checking email:', normalizedEmail);
 
   try {
     // Check duplicate email
@@ -28,7 +27,6 @@ export const register = async (req, res) => {
       'SELECT id FROM users WHERE email = $1 AND is_deleted = false',
       [normalizedEmail]
     );
-    console.log('Existing rows:', existing.rows);
     if (existing.rows.length > 0) {
       return res.status(409).json({error: 'Email already in use'});
     }
