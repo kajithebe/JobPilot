@@ -69,7 +69,6 @@ const CheckInFlow = () => {
 const App = () => {
   return (
     <>
-      <Toaster position="top-right" />
       <CheckInFlow />
       <Routes>
         {/* Public routes */}

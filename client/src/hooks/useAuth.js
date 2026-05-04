@@ -38,7 +38,6 @@ export const useAuth = () => {
     } catch (err) {
       const message = err.response?.data?.error || 'Login failed';
       toast.error(message, { duration: 4000 });
-      throw err;
     } finally {
       setLoading(false);
     }

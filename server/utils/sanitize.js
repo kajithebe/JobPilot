@@ -8,7 +8,6 @@ export const sanitizeString = (value) => {
 export const sanitizeObject = (obj) => {
   if (!obj || typeof obj !== 'object') return obj;
 
-  // Handle arrays — sanitise each element but preserve array structure
   if (Array.isArray(obj)) {
     return obj.map((item) => {
       if (typeof item === 'string') return sanitizeString(item);
@@ -19,7 +18,10 @@ export const sanitizeObject = (obj) => {
 
   const sanitized = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string') {
+    // Don't sanitise email fields — xss can mangle valid email characters
+    if (key === 'email' && typeof value === 'string') {
+      sanitized[key] = value.trim();
+    } else if (typeof value === 'string') {
       sanitized[key] = sanitizeString(value);
     } else if (Array.isArray(value)) {
       sanitized[key] = sanitizeObject(value);

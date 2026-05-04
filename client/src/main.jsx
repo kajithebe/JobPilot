@@ -5,7 +5,6 @@ import './index.css';
 import App from './App.jsx';
 import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 import { AuthProvider } from './store/authContext.jsx';
-
 import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')).render(
@@ -16,6 +15,7 @@ createRoot(document.getElementById('root')).render(
           <App />
         </AuthProvider>
       </BrowserRouter>
+      <Toaster position="top-right" />
     </ErrorBoundary>
   </StrictMode>
 );
