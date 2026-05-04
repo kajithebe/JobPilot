@@ -15,7 +15,7 @@ createRoot(document.getElementById('root')).render(
           <App />
         </AuthProvider>
       </BrowserRouter>
-      <Toaster />
+      <Toaster position="top-right" />
     </ErrorBoundary>
   </StrictMode>
 );
