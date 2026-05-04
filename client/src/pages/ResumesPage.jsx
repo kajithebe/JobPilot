@@ -36,6 +36,7 @@ const ResumesPage = () => {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const navigate = useNavigate();
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // stores resume id to delete
 
   useEffect(() => {
     fetchResumes();
@@ -70,13 +71,12 @@ const ResumesPage = () => {
     }
   };
 
-  const handleDelete = async (id, e) => {
-    e.stopPropagation();
-    if (!confirm('Delete this resume?')) return;
+  const handleDelete = async () => {
     try {
-      await deleteResume(id);
-      setResumes((prev) => prev.filter((r) => r.id !== id));
+      await deleteResume(deleteConfirm);
+      setResumes((prev) => prev.filter((r) => r.id !== deleteConfirm));
       toast.success('Resume deleted');
+      setDeleteConfirm(null);
     } catch {
       toast.error('Failed to delete resume');
     }
@@ -144,7 +144,10 @@ const ResumesPage = () => {
                   </p>
                 </div>
                 <button
-                  onClick={(e) => handleDelete(resume.id, e)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteConfirm(resume.id);
+                  }}
                   className="text-gray-300 hover:text-red-400 transition ml-2 opacity-0 group-hover:opacity-100 text-lg leading-none"
                 >
                   ×
@@ -152,6 +155,30 @@ const ResumesPage = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm shadow-lg">
+            <h3 className="text-gray-900 font-semibold mb-1">Delete Resume</h3>
+            <p className="text-gray-500 text-sm mb-4">
+              Are you sure you want to delete this resume? This cannot be undone.
+            </p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
