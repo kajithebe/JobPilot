@@ -20,12 +20,15 @@ export const register = async (req, res) => {
   }
 
   const normalizedEmail = email.trim().toLowerCase();
+  console.log('Checking email:', normalizedEmail);
 
   try {
     // Check duplicate email
-    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [
-      normalizedEmail,
-    ]);
+    const existing = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND is_deleted = false',
+      [normalizedEmail]
+    );
+    console.log('Existing rows:', existing.rows);
     if (existing.rows.length > 0) {
       return res.status(409).json({error: 'Email already in use'});
     }
@@ -64,9 +67,10 @@ export const login = async (req, res) => {
   const normalizedEmail = email.trim().toLowerCase();
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [
-      normalizedEmail,
-    ]);
+    const result = await pool.query(
+      'SELECT * FROM users WHERE email = $1 AND is_deleted = false',
+      [normalizedEmail]
+    );
 
     const user = result.rows[0];
     if (!user) {
