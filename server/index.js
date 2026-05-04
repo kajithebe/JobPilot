@@ -13,6 +13,7 @@ import pdfRoutes from './routes/pdf.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import rateLimit from 'express-rate-limit';
 import {sanitizeBody} from './middleware/sanitize.middleware.js';
+import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 
@@ -47,6 +48,7 @@ app.use('/api/import', importerRoutes);
 app.use('/api/interviews', interviewRoutes);
 app.use('/api/resumes', pdfRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({status: 'ok', message: 'JobPilot API is running'});
