@@ -85,8 +85,18 @@ export const createApplication = async (req, res) => {
       status,
     });
 
+    // Fetch with join so resume_name and resume_version_name are included
+    const full = await client.query(
+      `SELECT a.*, rv.version_name as resume_version_name, r.name as resume_name
+       FROM applications a
+       LEFT JOIN resume_versions rv ON a.resume_version_id = rv.id
+       LEFT JOIN resumes r ON rv.resume_id = r.id
+       WHERE a.id = $1`,
+      [application.id]
+    );
+
     await client.query('COMMIT');
-    res.status(201).json(application);
+    res.status(201).json(full.rows[0]);
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Create application error:', err);
@@ -119,9 +129,10 @@ export const getApplications = async (req, res) => {
 
   try {
     let query = `
-      SELECT a.*, rv.version_name as resume_version_name
+      SELECT a.*, rv.version_name as resume_version_name, r.name as resume_name
       FROM applications a
       LEFT JOIN resume_versions rv ON a.resume_version_id = rv.id
+      LEFT JOIN resumes r ON rv.resume_id = r.id
       WHERE a.user_id = $1 AND a.is_deleted = false
     `;
     const params = [user_id];
@@ -156,9 +167,10 @@ export const getApplicationById = async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT a.*, rv.version_name as resume_version_name
+      `SELECT a.*, rv.version_name as resume_version_name, r.name as resume_name
        FROM applications a
        LEFT JOIN resume_versions rv ON a.resume_version_id = rv.id
+       LEFT JOIN resumes r ON rv.resume_id = r.id
        WHERE a.id = $1 AND a.user_id = $2 AND a.is_deleted = false`,
       [id, user_id]
     );
