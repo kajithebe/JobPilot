@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { importFromUrl } from '../../services/application.service.js';
+import { getResumes, getVersions } from '../../services/resume.service.js';
 import toast from 'react-hot-toast';
 
 const AddApplicationModal = ({ onClose, onSave }) => {
@@ -11,9 +12,38 @@ const AddApplicationModal = ({ onClose, onSave }) => {
     salary: '',
     notes: '',
     status: 'wishlist',
+    resume_version_id: '',
   });
+  const [resumes, setResumes] = useState([]);
+  const [versions, setVersions] = useState([]);
+  const [selectedResumeId, setSelectedResumeId] = useState('');
   const [importing, setImporting] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  // Fetch resumes on mount
+  useEffect(() => {
+    getResumes()
+      .then((data) => setResumes(data || []))
+      .catch(() => {});
+  }, []);
+
+  // Fetch versions when resume changes
+  useEffect(() => {
+    if (!selectedResumeId) {
+      setVersions([]);
+      setForm((prev) => ({ ...prev, resume_version_id: '' }));
+      return;
+    }
+    getVersions(selectedResumeId)
+      .then((data) => {
+        setVersions(data || []);
+        // Auto-select the latest version
+        if (data && data.length > 0) {
+          setForm((prev) => ({ ...prev, resume_version_id: String(data[0].id) }));
+        }
+      })
+      .catch(() => setVersions([]));
+  }, [selectedResumeId]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -44,7 +74,10 @@ const AddApplicationModal = ({ onClose, onSave }) => {
     }
     setSaving(true);
     try {
-      await onSave(form);
+      await onSave({
+        ...form,
+        resume_version_id: form.resume_version_id ? parseInt(form.resume_version_id) : null,
+      });
       onClose();
     } catch {
       toast.error('Failed to save application');
@@ -55,7 +88,7 @@ const AddApplicationModal = ({ onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-      <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-lg shadow-lg">
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-lg shadow-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-gray-900 font-semibold">Add Application</h3>
           <button
@@ -143,13 +176,61 @@ const AddApplicationModal = ({ onClose, onSave }) => {
             </div>
           </div>
 
+          {/* Resume selector */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Resume Used <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <select
+              value={selectedResumeId}
+              onChange={(e) => setSelectedResumeId(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+            >
+              <option value="">Select a resume...</option>
+              {resumes.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Version selector — shown only when resume selected */}
+          {selectedResumeId && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Resume Version</label>
+              {versions.length === 0 ? (
+                <p className="text-xs text-amber-500">
+                  This resume has no saved versions yet. Save a version first.
+                </p>
+              ) : (
+                <select
+                  value={form.resume_version_id}
+                  onChange={(e) => handleChange('resume_version_id', e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
+                >
+                  {versions.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.version_name} —{' '}
+                      {new Date(v.created_at).toLocaleDateString('en-GB', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
+                      })}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          )}
+
           {/* Status */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Status</label>
             <select
               value={form.status}
               onChange={(e) => handleChange('status', e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
             >
               <option value="wishlist">Wishlist</option>
               <option value="applied">Applied</option>

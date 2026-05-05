@@ -135,13 +135,18 @@ const ApplicationDetailModal = ({ application, onClose, onUpdate, onDelete }) =>
           </div>
 
           {/* Linked resume version */}
-          {application.resume_version_name && (
+          {(application.resume_name || application.resume_version_name) && (
             <div>
-              <p className="text-xs text-gray-400 mb-1">Linked Resume Version</p>
-              <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
-                <p className="text-sm text-blue-700 font-medium">
-                  {application.resume_version_name}
-                </p>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
+                Linked Resume
+              </p>
+              <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2.5">
+                <p className="text-sm text-blue-700 font-medium">{application.resume_name}</p>
+                {application.resume_version_name && (
+                  <p className="text-xs text-blue-500 mt-0.5">
+                    Version: {application.resume_version_name}
+                  </p>
+                )}
               </div>
             </div>
           )}
