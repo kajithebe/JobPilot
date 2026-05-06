@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
   password    VARCHAR(255) NOT NULL,
   avatar_url  VARCHAR(500),
   notify_email BOOLEAN DEFAULT true,
+  is_deleted   BOOLEAN DEFAULT false,
   created_at  TIMESTAMP DEFAULT NOW(),
   updated_at  TIMESTAMP DEFAULT NOW()
 );
